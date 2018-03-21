@@ -4,10 +4,11 @@ import struct
 import threading
 import time
 
-
+#Basic motor setup
 B = ev3.LargeMotor('outB')
 C = ev3.LargeMotor('outC')
 
+#connect to server
 HOST = '192.168.1.18'    # The remote host
 PORT = 5000             # The same port as used by the server
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -24,6 +25,7 @@ except Exception as e:
 
 
 def process_msg(data):
+    # Move motors at power sent from server
     print(data.decode())
     power = data.decode().split(';')
     power[0] = float(power[0])
@@ -32,6 +34,7 @@ def process_msg(data):
     C.run_forever(speed_sp=power[1])
 
 while True:
+         # recieve messages from server
          data = ''
          try: 
             data,tmp = s.recvfrom(1500)
