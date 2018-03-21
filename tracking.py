@@ -54,7 +54,7 @@ while True:
     # this removes noise by eroding and filling in the regions
     bluemaskOpen=cv2.morphologyEx(bluemask,cv2.MORPH_OPEN,kernelOpen)
     bluemaskClose=cv2.morphologyEx(bluemaskOpen,cv2.MORPH_CLOSE,kernelClose)
-    imgblue, blueconts, h = cv2.findContours(bluemaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    imgblue, blueconts, h = cv2.findConts(bluemaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     cv2.imshow("bluemask",imgblue)
 
     # Finding bigest blue area and save the contour
@@ -103,8 +103,8 @@ while True:
 
     # find the angle from the center of blue to center of red
     # this is the angle of the robot in the image
-    # We need to special case of 90/-90 due to tan() discontinuity
-    # We also need to deal with angles > 90 and < 0 to map correctly
+    # I need to special case of 90/-90 due to tan() discontinuity
+    # I also need to deal with angles > 90 and < 0 to map correctly
     # to a 360 degree circle
     if (bluecx-redcx) == 0:
         if bluecy > redcy:
@@ -120,7 +120,7 @@ while True:
         elif ang < 0:
             ang = 360 + ang
 
-    # draw some robot outlines on the screen and display
+    # draw some robot lines on the screen and display
     cv2.line(img, (bluecx,bluecy), (redcx,redcy), (200,0,200),3)
 #    cv2.putText(img,str(ang),(10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
     cv2.imshow("cam",img)
@@ -181,7 +181,7 @@ while True:
         else:
             lineang = 90 - lineang
 
-    # draw a line with our estimate of line location and angle
+    # draw a line with the estimate of line location and angle
     cv2.line(crop_img, (int(x_min),int(y_min)), (int(x_min+50*np.cos(lineang*np.pi/180)),int(y_min-50*np.sin(lineang*np.pi/180))), (200,0,200),2)
     cv2.circle(crop_img,(int(x_min),int(y_min)),3,(200,0,200),-1)
 
@@ -192,18 +192,18 @@ while True:
 
     # The direction error is the difference in angle of the line and robot
     D_fix = lineang - ang
-    # our line angle guesswork is sometimes off by 180 degrees. We detect and
+    # the line angle guesswork is sometimes off by 180 degrees. detect and
     # fix this error here
     if D_fix < -90:
         D_fix += 180
     elif D_fix > 90:
         D_fix -= 180
 
-    # Our position error is an estimate of how far the font center of our
+    # the position error is an estimate of how far the font center of the
     # robot is from the line. The center of the cropped image
     # (x,y) = (cropsize, cropsize) is the front of the robot. (x_min, y_min) is
-    # the center of the line. We draw a line from the front center of the robot
-    # to the center of the line. We difference in angle between this line and
+    # the center of the line. Draw a line from the front center of the robot
+    # to the center of the line. Difference in angle between this line and
     # robot's direction is the position error.
     if (x_min - cropsize) == 0:
         if (ang < 180):
@@ -224,7 +224,7 @@ while True:
         P_fix = P_fix - 360
     elif P_fix < -180:
         P_fix = 360 + P_fix
-    # our line angle guesswork is sometimes off by 180 degrees. We detect and
+    # the line angle guesswork is sometimes off by 180 degrees. Detect and
     # fix this error here
     if P_fix < -90:
         P_fix += 180
@@ -232,43 +232,26 @@ while True:
         P_fix -= 180
 
     # print and save correction and current network conditions
-#    print("P, D --->", P_fix, D_fix)
-#    tmpos = os.popen('echo seshan | sudo -S tc qdisc show dev wlo1').read()
-#    print(tmpos)
+    print("P, D --->", P_fix, D_fix)
+    tmpos = os.popen('echo seshan | sudo -S tc qdisc show dev wlo1').read()
+    print(tmpos)
 
     # Compute correction based on angle/position error
     left = int(100 - 1*P_fix - 1*D_fix)
     right = int(100 + 1*P_fix + 1*D_fix)
     data = str(left) + ";" + str(right)
 
-#     # send movement fix to robot
-#     send_msg = str(str(data)).encode()
-#     try:
-#          sock.sendto(send_msg, robot_address)
-# #         print("SENDING COMPLETE")
-#     except Exception as e:
-#          print("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
-#          try:
-#                  print("sending " + send_msg)
-#                  sock.sendto(send_msg, robot_address)
-#                  #         data = s.recv(1024)
-#          except:
-#                  print("FAILED.....Giving up :-( - pass;")
+     # send movement fix to robot
+     send_msg = str(str(data)).encode()
+     try:
+          sock.sendto(send_msg, robot_address)
+     except Exception as e:
+          print("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
+          try:
+                  print("sending " + send_msg)
+                  sock.sendto(send_msg, robot_address)
+          except:
+                  print("FAILED.....Giving up :-( - pass;")
 
 
-    # for i in range(len(conts)):
-    #      x,y,w,h=cv2.boundingRect(conts[i])
-    #      cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255), 2)
-    #      cv2.cv.PutText(cv2.cv.fromarray(img), str(i+1),(x,y+h),font,(0,255,255))
-    # print "set"
-	# print "x1:" + str(x)
-	# print "x2:" + str(x+w)
-	# print "y1:" + str(y)
-	# print "y2:" + str(y+h)
-	# print "end set"
 
-#    cv2.imshow("maskClose",maskClose)
-#    cv2.imshow("maskOpen",maskOpen)
-#    cv2.imshow("mask",mask)
-#    cv2.waitKey(10)
-#    cv2.imshow("im2",im2)
