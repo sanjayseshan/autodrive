@@ -16,7 +16,6 @@ s.bind(("",PORT))
 address = (HOST, PORT)
 #s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 try: 
-#   s.connect((HOST, PORT))
    s.sendto("HELLO".encode(),address)
    print("connected to "+HOST)
 except Exception as e:
@@ -36,7 +35,6 @@ while True:
          data = ''
          try: 
             data,tmp = s.recvfrom(1500)
-#            print(time.time()-float(data))
             process_msg(data)
          except Exception as e:
             print("FAILURE TO RECV.." + str(e.args) + "..RECONNECTING")
