@@ -10,7 +10,6 @@ from time import sleep
 host = '192.168.1.15'
 port = 5000
 robot_address = (host, port)
-#sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 sock.bind(("", port))
@@ -51,7 +50,7 @@ while True:
     ret, cap_img=cam.read()
     img=cv2.resize(cap_img,(xdim,ydim))
     orig_img = img.copy()
-    cv2.imshow("raw", orig_img)
+#    cv2.imshow("raw", orig_img)
     imgHSV= cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
     # identify the blue regions
@@ -60,7 +59,7 @@ while True:
     bluemaskOpen=cv2.morphologyEx(bluemask,cv2.MORPH_OPEN,kernelOpen)
     bluemaskClose=cv2.morphologyEx(bluemaskOpen,cv2.MORPH_CLOSE,kernelClose)
     imgblue, blueconts, h = cv2.findContours(bluemaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    cv2.imshow("bluemask",imgblue)
+#    cv2.imshow("bluemask",imgblue)
 
     # Finding bigest blue area and save the contour
     max_area = 0
@@ -85,7 +84,7 @@ while True:
     redmaskOpen=cv2.morphologyEx(redmask,cv2.MORPH_OPEN,kernelOpen)
     redmaskClose=cv2.morphologyEx(redmaskOpen,cv2.MORPH_CLOSE,kernelClose)
     imgred, redconts, h = cv2.findContours(redmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    cv2.imshow("redmask", imgred)
+#    cv2.imshow("redmask", imgred)
 
     # Finding bigest red area and save the contour
     max_area = 0
@@ -128,7 +127,7 @@ while True:
     # draw some robot outlines on the screen and display
     cv2.line(img, (bluecx,bluecy), (redcx,redcy), (200,0,200),3)
 #    cv2.putText(img,str(ang),(10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-    cv2.imshow("cam",img)
+#    cv2.imshow("cam",img)
 
     # find a small region in front of the robot and crop that part of the image
     ylen = (bluecy-redcy)
@@ -171,7 +170,7 @@ while True:
     drawblackbox = cv2.boxPoints(blackbox)
     drawblackbox = np.int0(drawblackbox)
     cv2.drawContours(crop_img,[drawblackbox],0,(0,255,0),3)
-    cv2.imshow("boxline",crop_img)
+#    cv2.imshow("boxline",crop_img)
     (x_min, y_min), (w_min, h_min), lineang = blackbox
     # Unfortunately, opencv only gives rectangles angles from 0 to -90 so we
     # need to do some guesswork to get the right quadrant for the angle
@@ -247,7 +246,9 @@ while True:
     data = str(left) + ";" + str(right)
 
     # send movement fix to robot
-    send_msg = str(str(data)).encode()
+    send_str = str(str(data)).encode()
+    send_msg = struct.pack('!I', len(send_str))
+    send_msg += send_str
     try:
 #         sock.sendto(send_msg, robot_address)
          conn.sendall(send_msg)
@@ -259,27 +260,11 @@ while True:
                 conn, addresstup = sock.accept()
                 conn.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 
-                 print("sending " + send_msg)
-                 conn.sendall(send_msg)
-                 # sock.sendto(send_msg, robot_address)
+                print("sending " + send_msg)
+                conn.sendall(send_msg)
+                # sock.sendto(send_msg, robot_address)
 
          except:
                  print("FAILED.....Giving up :-( - pass;")
 
 
-    # for i in range(len(conts)):
-    #      x,y,w,h=cv2.boundingRect(conts[i])
-    #      cv2.rectangle(img,(x,y),(x+w,y+h),(0,0,255), 2)
-    #      cv2.cv.PutText(cv2.cv.fromarray(img), str(i+1),(x,y+h),font,(0,255,255))
-    # print "set"
-	# print "x1:" + str(x)
-	# print "x2:" + str(x+w)
-	# print "y1:" + str(y)
-	# print "y2:" + str(y+h)
-	# print "end set"
-
-#    cv2.imshow("maskClose",maskClose)
-#    cv2.imshow("maskOpen",maskOpen)
-#    cv2.imshow("mask",mask)
-#    cv2.waitKey(10)
-#    cv2.imshow("im2",im2)
