@@ -98,7 +98,7 @@ while True:
 
     cv2.imshow("rectangles",img)
     if not (redconts and blueconts):
-        # if we didn't find robot we are done
+        # if robot not found --> done
         continue
 
     # find the angle from the center of blue to center of red
@@ -156,7 +156,7 @@ while True:
             best_blackcont = cont
 
     if not blackconts:
-        # skip if we didn't find a line
+        # skip if didn't find a line
         continue
 
     # create a rectangle to represent the line and find
