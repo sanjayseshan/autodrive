@@ -54,7 +54,7 @@ while True:
     # this removes noise by eroding and filling in the regions
     bluemaskOpen=cv2.morphologyEx(bluemask,cv2.MORPH_OPEN,kernelOpen)
     bluemaskClose=cv2.morphologyEx(bluemaskOpen,cv2.MORPH_CLOSE,kernelClose)
-    imgblue, blueconts, h = cv2.findConts(bluemaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    imgblue, blueconts, h = cv2.findContours(bluemaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     cv2.imshow("bluemask",imgblue)
 
     # Finding bigest blue area and save the contour
@@ -233,7 +233,7 @@ while True:
 
     # print and save correction and current network conditions
     print("P, D --->", P_fix, D_fix)
-    tmpos = os.popen('echo seshan | sudo -S tc qdisc show dev wlo1').read()
+    tmpos = os.popen('echo seshan | sudo -S tc qdisc show dev wls3').read()
     print(tmpos)
 
     # Compute correction based on angle/position error
@@ -242,10 +242,10 @@ while True:
     data = str(left) + ";" + str(right)
 
      # send movement fix to robot
-     send_msg = str(str(data)).encode()
-     try:
+    send_msg = str(str(data)).encode()
+    try:
           sock.sendto(send_msg, robot_address)
-     except Exception as e:
+    except Exception as e:
           print("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
           try:
                   print("sending " + send_msg)
