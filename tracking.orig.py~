@@ -5,15 +5,6 @@ import os
 import socket
 import struct
 from time import sleep
-import math
-
-
-import video
-from video import presets
-import common
-from common import getsize, draw_keypoints
-from plane_tracker import PlaneTracker
-
 
 # set up network socket/addresses
 host = '192.168.1.15'
@@ -40,7 +31,7 @@ upper_orange = np.array([40,255,255])
 
 
 # set up camera and opencv variables
-cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(1)
 kernelOpen=np.ones((5,5))
 kernelClose=np.ones((20,20))
 font=cv2.FONT_HERSHEY_SIMPLEX
@@ -48,20 +39,6 @@ xdim = 1280
 ydim = 720
 cropsize = 80
 
-def on_rect(rect):
-    tracker.clear()
-    tracker.add_target(frame, rect)
-
-
-cv2.namedWindow('plane')
-rect_sel = common.RectSelector('plane', on_rect)
-tracker = PlaneTracker()
-x0=0
-y0=0
-x1=0
-y1=0
-arr=[0,0,0]
-pos=(0,0)
 while True:
     cv2.waitKey(10)
 
@@ -72,145 +49,53 @@ while True:
     cv2.imshow("raw", orig_img)
     imgHSV= cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
-
-    frame = img.copy()
-
-
-
-    grey = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    ret,thresh = cv2.threshold(grey,127,255,1)
-
-    contours = cv2.findContours(thresh,1,2)
-
-    for cnt in contours:
-        approx = cv2.approxPolyDP(cnt,0.01*cv2.arcLength(cnt,True),True)
-        print(len(approx))
-        if len(approx)==5:
-            print("pentagon")
-            cv2.drawContours(img,[cnt],0,255,-1)
-        elif len(approx)==3:
-            print("triangle")
-            cv2.drawContours(img,[cnt],0,(0,255,0),-1)
-        elif len(approx)==4:
-            print("square")
-            cv2.drawContours(img,[cnt],0,(0,0,255),-1)
-        elif len(approx) == 9:
-            print("half-circle")
-            cv2.drawContours(img,[cnt],0,(255,255,0),-1)
-        elif len(approx) > 15:
-            print("circle")
-            cv2.drawContours(img,[cnt],0,(0,255,255),-1)
-
-        cv2.imshow('img',img)
-
-    
-"""
-    w, h = getsize(frame)
-    vis = np.zeros((h, w*2, 3), np.uint8)
-    vis[:h,:w] = frame
-    if len(tracker.targets) > 0:
-        target = tracker.targets[0]
-        vis[:,w:] = target.image
-        draw_keypoints(vis[:,w:], target.keypoints)
-        x0, y0, x1, y1 = target.rect
-        #print(target.keypoints)
-        cv2.rectangle(vis, (x0+w, y0), (x1+w, y1), (0, 255, 0), 2)
-#        print("Pos: ("+str((x1+x0)/2)+","+str((y1+y0)/2)+")")
-        pos = ((x1+x0)/2,(y1+y0)/2)
-        
-    tracked = tracker.track(frame)
-    if len(tracked) > 0:
-        tracked = tracked[0]
-        cv2.polylines(vis, [np.int32(tracked.quad)], True, (255, 255, 255), 2)
-        a=0
-        b=0
-        c=0
-        d=0
-        arr = []
-        for (x0, y0), (x1, y1) in zip(np.int32(tracked.p0), np.int32(tracked.p1)):
-            cv2.line(vis, (w+x0, y0), (x1, y1), (0, 255, 0))
-            if (x1-c) > 0 and (x0-a) > 0:
-                angent=(math.atan((y1-d)/(x1-c))-math.atan((y0-b)/(x0-a)))*180/math.pi
-                if a != 0:
-                    arr.append(angent)
-#                    print("Ang overall: "+ str(ang) + " , Cur: "+ str(math.atan((y1-d)/(x1-c))*180/math.pi) + " , Orig: " + str(math.atan((y0-b)/(x0-a))*180/math.pi))
-#                    print("a="+str(a))
-#                    print("b="+str(b))
-#                    print("c="+str(c))
-#                    print("d="+str(d))
-#                    print("x0="+str(x0))
-#                    print("x1="+str(x1))
-#                    print("y0="+str(y0))
-#                    print("y1="+str(y1))
-#                    break
-            a=x0
-            b=y0
-            c=x1
-            d=y1
-    if len(arr) > 0:
-        print("pos: "+ str(pos) + " ang: "+str(sum(arr)/len(arr)))
-    draw_keypoints(vis, tracker.frame_points)
-            
-    rect_sel.draw(vis)
-
-    cv2.imshow('plane',vis)
-"""
-#    cv2.imshow('plane2',vis[y0:y1,x0:x1])
-
-    
     # identify the blue regions
-#    bluemask=cv2.inRange(imgHSV,lower_blue,upper_blue)
+    bluemask=cv2.inRange(imgHSV,lower_blue,upper_blue)
     # this removes noise by eroding and filling in the regions
-#    bluemaskOpen=cv2.morphologyEx(bluemask,cv2.MORPH_OPEN,kernelOpen)
-#    bluemaskClose=cv2.morphologyEx(bluemaskOpen,cv2.MORPH_CLOSE,kernelClose)
-#    imgblue, blueconts, h = cv2.findContours(bluemaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-#    cv2.imshow("bluemask",imgblue)
+    bluemaskOpen=cv2.morphologyEx(bluemask,cv2.MORPH_OPEN,kernelOpen)
+    bluemaskClose=cv2.morphologyEx(bluemaskOpen,cv2.MORPH_CLOSE,kernelClose)
+    imgblue, blueconts, h = cv2.findContours(bluemaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    cv2.imshow("bluemask",imgblue)
 
     # Finding bigest blue area and save the contour
-#    max_area = 0
-#    for cont in blueconts:
-#        area = cv2.contourArea(cont)
-#        if area > max_area:
-#            max_area = area
-#            best_bluecont = cont
+    max_area = 0
+    for cont in blueconts:
+        area = cv2.contourArea(cont)
+        if area > max_area:
+            max_area = area
+            best_bluecont = cont
 
     # identify the middle of the biggest blue region
-#    if blueconts:
-#        cv2.drawContours(img, best_bluecont, -1, (0,255,0), 3)
-#        M = cv2.moments(best_bluecont)
-#        bluecx,bluecy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
+    if blueconts:
+        cv2.drawContours(img, best_bluecont, -1, (0,255,0), 3)
+        M = cv2.moments(best_bluecont)
+        bluecx,bluecy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
 
     # identify the red regions - red is tricky sine it is both 170-180 and 0-10
     # in the hue range
- #   redmask0 = cv2.inRange(imgHSV, lower_red, upper_red)
- #   redmask1 = cv2.inRange(imgHSV, lower_red2, upper_red2)
- #   redmask = redmask0 + redmask1
- #   # this removes noise by eroding and filling in the regions
- #   redmaskOpen=cv2.morphologyEx(redmask,cv2.MORPH_OPEN,kernelOpen)
- #   redmaskClose=cv2.morphologyEx(redmaskOpen,cv2.MORPH_CLOSE,kernelClose)
- #   imgred, redconts, h = cv2.findContours(redmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
- #   cv2.imshow("redmask", imgred)
+    redmask0 = cv2.inRange(imgHSV, lower_red, upper_red)
+    redmask1 = cv2.inRange(imgHSV, lower_red2, upper_red2)
+    redmask = redmask0 + redmask1
+    # this removes noise by eroding and filling in the regions
+    redmaskOpen=cv2.morphologyEx(redmask,cv2.MORPH_OPEN,kernelOpen)
+    redmaskClose=cv2.morphologyEx(redmaskOpen,cv2.MORPH_CLOSE,kernelClose)
+    imgred, redconts, h = cv2.findContours(redmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    cv2.imshow("redmask", imgred)
 
     # Finding bigest red area and save the contour
- #   max_area = 0
- #   for cont in redconts:
- #       area = cv2.contourArea(cont)
- #       if area > max_area:
- #           max_area = area
- #           best_redcont = cont
+    max_area = 0
+    for cont in redconts:
+        area = cv2.contourArea(cont)
+        if area > max_area:
+            max_area = area
+            best_redcont = cont
 
     # identify the middle of the biggest red region
-#    if redconts:
-#        cv2.drawContours(img, best_redcont, -1, (0,255,0), 3)
-#        M = cv2.moments(best_redcont)
-#        redcx,redcy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
+    if redconts:
+        cv2.drawContours(img, best_redcont, -1, (0,255,0), 3)
+        M = cv2.moments(best_redcont)
+        redcx,redcy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
 
-
-
-
-
-"""
     cv2.imshow("rectangles",img)
     if not (redconts and blueconts):
         # if robot not found --> done
@@ -221,9 +106,6 @@ while True:
     # I need to special case of 90/-90 due to tan() discontinuity
     # I also need to deal with angles > 90 and < 0 to map correctly
     # to a 360 degree circle
-
-    
-
     if (bluecx-redcx) == 0:
         if bluecy > redcy:
             ang = 90
@@ -371,5 +253,5 @@ while True:
           except:
                   print("FAILED.....Giving up :-( - pass;")
 
-"""
+
 
