@@ -5,11 +5,9 @@ import os
 import socket
 import struct
 from time import sleep
-import sys
-import time
 
 # set up network socket/addresses
-host = '192.168.1.15'
+host = '192.168.1.23'
 port = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -17,52 +15,29 @@ sock.bind(("", port))
 print ("Active on port: " + str(port))
 robot_address = (host, port)
 
-print("init camera on /dev/video"+sys.argv[1])
-time.sleep(1)
-
 # set up robot colors
-if sys.argv[1] == "0":
-    lower_green=np.array([35,60,50])
-    upper_green=np.array([105,220,140])
-    lower_black=np.array([0,0,0])
-    upper_black=np.array([200,60,60])
-    lower_red = np.array([0,100,100])
-    upper_red = np.array([180,255,255])
-    lower_red2 = np.array([160,200,100])
-    upper_red2 = np.array([180,255,255])
-    lower_blue = np.array([85,31,63])
-    upper_blue = np.array([138,106,127])
-    lower_orange = np.array([0,120,120])
-    upper_orange = np.array([40,255,255])
+lower_green=np.array([35,60,50])
+upper_green=np.array([105,220,140])
+lower_black=np.array([0,0,0])
+upper_black=np.array([180,70,70])
+lower_red = np.array([0,160,100])
+upper_red = np.array([60,255,255])
+lower_red2 = np.array([170,200,100])
+upper_red2 = np.array([180,255,255])
+lower_blue = np.array([85,31,63])
+upper_blue = np.array([138,106,127])
+lower_orange = np.array([0,120,120])
+upper_orange = np.array([40,255,255])
 
-    # set up camera and opencv variables
-    cam = cv2.VideoCapture(0)
-else:
-    lower_green=np.array([35,60,50])
-    upper_green=np.array([105,220,140])
-    lower_black=np.array([0,0,0])
-    upper_black=np.array([80,100,100])
-    lower_red = np.array([0,100,100])
-    upper_red = np.array([50,255,255])
-    lower_red2 = np.array([160,200,100])
-    upper_red2 = np.array([180,255,255])
-    lower_blue = np.array([85,31,63])
-    upper_blue = np.array([138,106,127])
-    lower_orange = np.array([0,120,120])
-    upper_orange = np.array([40,255,255])
 
-    # set up camera and opencv variables
-    cam = cv2.VideoCapture(int(sys.argv[1]))
-
+# set up camera and opencv variables
+cam = cv2.VideoCapture(2)
 kernelOpen=np.ones((5,5))
 kernelClose=np.ones((20,20))
 font=cv2.FONT_HERSHEY_SIMPLEX
 xdim = 1280
 ydim = 720
 cropsize = 80
-gmax=0
-rmax=0
-lastP_fix = 0
 
 while True:
     cv2.waitKey(10)
@@ -88,11 +63,10 @@ while True:
         area = cv2.contourArea(cont)
         if area > max_area:
             max_area = area
-            gmax = max_area
             best_greencont = cont
-    
+
     # identify the middle of the biggest green region
-    if greenconts and max_area > 5000:
+    if greenconts:
         cv2.drawContours(img, best_greencont, -1, (0,255,0), 3)
         M = cv2.moments(best_greencont)
         greencx,greency = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
@@ -114,18 +88,16 @@ while True:
         area = cv2.contourArea(cont)
         if area > max_area:
             max_area = area
-            rmax = max_area
             best_redcont = cont
-#    print("max: "+str(max_area))
-            
+
     # identify the middle of the biggest red region
-    if redconts and max_area > 5000:
+    if redconts:
         cv2.drawContours(img, best_redcont, -1, (0,255,0), 3)
         M = cv2.moments(best_redcont)
         redcx,redcy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
 
     cv2.imshow("rectangles",img)
-    if not (redconts and greenconts and gmax > 5000 and rmax > 5000):
+    if not (redconts and greenconts):
         # if robot not found --> done
         continue
 
@@ -259,18 +231,14 @@ while True:
     elif P_fix > 90:
         P_fix -= 180
 
-    I_fix = P_fix + lastP_fix
-
-    lastP_fix = I_fix*0.5
-    
     # print and save correction and current network conditions
-    print("P, I, D --->", P_fix, I_fix, D_fix)
+    print("P, D --->", P_fix, D_fix)
     tmpos = os.popen('echo seshan | sudo -S tc qdisc show dev wlp7s0').read()
     print(tmpos)
 
     # Compute correction based on angle/position error
-    left = int(100 - 1*P_fix - 1*D_fix - 0.02*I_fix)
-    right = int(100 + 1*P_fix + 1*D_fix + 0.02*I_fix)
+    left = int(100 - 1*P_fix - 1*D_fix)
+    right = int(100 + 1*P_fix + 1*D_fix)
     data = str(left) + ";" + str(right)
 
      # send movement fix to robot

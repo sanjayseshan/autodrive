@@ -5,8 +5,6 @@ import os
 import socket
 import struct
 from time import sleep
-import sys
-import time
 
 # set up network socket/addresses
 host = '192.168.1.15'
@@ -17,43 +15,23 @@ sock.bind(("", port))
 print ("Active on port: " + str(port))
 robot_address = (host, port)
 
-print("init camera on /dev/video"+sys.argv[1])
-time.sleep(1)
-
 # set up robot colors
-if sys.argv[1] == "0":
-    lower_green=np.array([35,60,50])
-    upper_green=np.array([105,220,140])
-    lower_black=np.array([0,0,0])
-    upper_black=np.array([200,60,60])
-    lower_red = np.array([0,100,100])
-    upper_red = np.array([180,255,255])
-    lower_red2 = np.array([160,200,100])
-    upper_red2 = np.array([180,255,255])
-    lower_blue = np.array([85,31,63])
-    upper_blue = np.array([138,106,127])
-    lower_orange = np.array([0,120,120])
-    upper_orange = np.array([40,255,255])
+lower_green=np.array([35,60,50])
+upper_green=np.array([105,220,140])
+lower_black=np.array([0,0,0])
+upper_black=np.array([80,100,100])
+lower_red = np.array([0,100,100])
+upper_red = np.array([50,255,255])
+lower_red2 = np.array([160,200,100])
+upper_red2 = np.array([180,255,255])
+lower_blue = np.array([85,31,63])
+upper_blue = np.array([138,106,127])
+lower_orange = np.array([0,120,120])
+upper_orange = np.array([40,255,255])
 
-    # set up camera and opencv variables
-    cam = cv2.VideoCapture(0)
-else:
-    lower_green=np.array([35,60,50])
-    upper_green=np.array([105,220,140])
-    lower_black=np.array([0,0,0])
-    upper_black=np.array([80,100,100])
-    lower_red = np.array([0,100,100])
-    upper_red = np.array([50,255,255])
-    lower_red2 = np.array([160,200,100])
-    upper_red2 = np.array([180,255,255])
-    lower_blue = np.array([85,31,63])
-    upper_blue = np.array([138,106,127])
-    lower_orange = np.array([0,120,120])
-    upper_orange = np.array([40,255,255])
 
-    # set up camera and opencv variables
-    cam = cv2.VideoCapture(int(sys.argv[1]))
-
+# set up camera and opencv variables
+cam = cv2.VideoCapture(1)
 kernelOpen=np.ones((5,5))
 kernelClose=np.ones((20,20))
 font=cv2.FONT_HERSHEY_SIMPLEX
