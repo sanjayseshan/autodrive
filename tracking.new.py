@@ -22,13 +22,13 @@ print("init camera on /dev/video"+sys.argv[1])
 #time.sleep(1)
 
 # set up robot colors
-if sys.argv[1] == "0":
+if sys.argv[1] == "0" or sys.argv[1] == "1":
     lower_green=np.array([35,60,50])
     upper_green=np.array([105,220,140])
     lower_black=np.array([0,0,0])
     upper_black=np.array([200,60,60])
     lower_red = np.array([0,100,100])
-    upper_red = np.array([180,255,255])
+    upper_red = np.array([60,255,255])
     lower_red2 = np.array([160,200,100])
     upper_red2 = np.array([180,255,255])
     lower_blue = np.array([85,31,63])
@@ -37,12 +37,12 @@ if sys.argv[1] == "0":
     upper_orange = np.array([40,255,255])
 
     # set up camera and opencv variables
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(int(sys.argv[1]))
 else:
     lower_green=np.array([75,60,50])
     upper_green=np.array([105,220,140])
     lower_black=np.array([0,0,0])
-    upper_black=np.array([180,100,70])
+    upper_black=np.array([180,90,90])
     lower_red = np.array([0,100,100])
     upper_red = np.array([20,255,255])
     lower_red2 = np.array([160,100,100])
@@ -65,6 +65,7 @@ gmax=0
 rmax=0
 lastP_fix = 0
 I_fix=0
+camid=sys.argv[1]
 while True:
     cv2.waitKey(10)
     
@@ -91,17 +92,47 @@ while True:
             max_area = area
             gmax = max_area
             best_greencont = cont
-    
+    greencx,greency = (300,200)
     # identify the middle of the biggest green region
     if greenconts and max_area > 5000:
         cv2.drawContours(img, best_greencont, -1, (0,255,0), 3)
         M = cv2.moments(best_greencont)
         greencx,greency = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
+    robotimg = imgHSV[max(greency-200,0):greency+200,max(greencx-300,0):greencx+300]
 
+
+    greenmask=cv2.inRange(robotimg,lower_green,upper_green)
+    # this removes noise by eroding and filling in the regions
+    greenmaskOpen=cv2.morphologyEx(greenmask,cv2.MORPH_OPEN,kernelOpen)
+    greenmaskClose=cv2.morphologyEx(greenmaskOpen,cv2.MORPH_CLOSE,kernelClose)
+    greenconts, h = cv2.findContours(greenmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    #cv2.imshow("greenmask",imggreen)
+
+    # Finding bigest green area and save the contour
+    max_area = 0
+    for cont in greenconts:
+        area = cv2.contourArea(cont)
+        if area > max_area:
+            max_area = area
+            gmax = max_area
+            best_greencont = cont
+    greencx,greency = (100,100)
+    # identify the middle of the biggest green region
+    if greenconts and max_area > 5000:
+        cv2.drawContours(robotimg, best_greencont, -1, (0,255,0), 3)
+        M = cv2.moments(best_greencont)
+        greencx,greency = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
+
+
+
+        
     # identify the red regions - red is tricky sine it is both 170-180 and 0-10
     # in the hue range
-    redmask0 = cv2.inRange(imgHSV, lower_red, upper_red)
-    redmask1 = cv2.inRange(imgHSV, lower_red2, upper_red2)
+#    redmask0 = cv2.inRange(imgHSV, lower_red, upper_red)
+#    redmask1 = cv2.inRange(imgHSV, lower_red2, upper_red2)
+#    redmask = redmask0 + redmask1
+    redmask0 = cv2.inRange(robotimg, lower_red, upper_red)
+    redmask1 = cv2.inRange(robotimg, lower_red2, upper_red2)
     redmask = redmask0 + redmask1
     # this removes noise by eroding and filling in the regions
     redmaskOpen=cv2.morphologyEx(redmask,cv2.MORPH_OPEN,kernelOpen)
@@ -121,14 +152,15 @@ while True:
             
     # identify the middle of the biggest red region
     if redconts and max_area > 5000:
-        cv2.drawContours(img, best_redcont, -1, (0,255,0), 3)
+        cv2.drawContours(robotimg, best_redcont, -1, (0,255,0), 3)
         M = cv2.moments(best_redcont)
         redcx,redcy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
+
 
     #cv2.imshow("rectangles",img)
     if not (redconts and greenconts and gmax > 5000 and rmax > 5000):
         # if robot not found --> done
-        data = str(0) + ";" + str(0)
+        data = str(0) + ";" + str(0) + ";" + str(0)
         
         # send movement fix to robot
         send_msg = str(str(data)).encode()
@@ -163,9 +195,10 @@ while True:
             ang = 360 + ang
 
     # draw some robot lines on the screen and display
-    cv2.line(img, (greencx,greency), (redcx,redcy), (200,0,200),3)
+    cv2.line(robotimg, (greencx,greency), (redcx,redcy), (200,0,200),3)
 #    cv2.putText(img,str(ang),(10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-    cv2.imshow("cam",img)
+    cv2.imshow("cam"+camid,img)
+    cv2.imshow("robotimg"+camid,robotimg)
 
     # find a small region in front of the robot and crop that part of the image
     ylen = (greency-redcy)
@@ -180,15 +213,15 @@ while True:
         boxY = (ydim-cropsize)
     elif boxY < cropsize:
         boxY = cropsize
-    crop_img = orig_img[int(abs(boxY-cropsize)):int(abs(boxY+cropsize)), int(abs(boxX-cropsize)):int(abs(boxX+cropsize))]
+    crop_img = robotimg[int(abs(boxY-cropsize)):int(abs(boxY+cropsize)), int(abs(boxX-cropsize)):int(abs(boxX+cropsize))]
 #    cv2.circle(crop_img,(cropsize,cropsize),5,(0,255,0),-1)
 
     # find the black regions in the cropped image (this is the line)
     blackmask=cv2.inRange(crop_img,lower_black,upper_black)
     blackmaskOpen=cv2.morphologyEx(blackmask,cv2.MORPH_OPEN,kernelOpen)
-    cv2.imshow("boxmask1",blackmaskOpen)
+    #cv2.imshow("boxmask1",blackmaskOpen)
     blackmaskClose=cv2.morphologyEx(blackmaskOpen,cv2.MORPH_CLOSE,kernelClose)
-    cv2.imshow("boxmask",blackmaskClose)
+    #cv2.imshow("boxmask",blackmaskClose)
     blackconts, h = cv2.findContours(blackmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     #Finding the largest black region
@@ -198,6 +231,7 @@ while True:
         if area > max_area:
             max_area = area
             best_blackcont = cont
+        #print("A: "+str(max_area))
 
     if not blackconts:
         # skip if didn't find a line
@@ -230,7 +264,7 @@ while True:
     cv2.circle(crop_img,(int(x_min),int(y_min)),3,(200,0,200),-1)
 
     try:
-        cv2.imshow("boxlineangle", crop_img)
+        cv2.imshow("boxlineangle"+camid, crop_img)
     except:
         pass
 
@@ -280,14 +314,16 @@ while True:
     lastP_fix = P_fix
     
     # print and save correction and current network conditions
-    print("P, I, D --->", P_fix, I_fix, D_fix)
-    tmpos = os.popen('echo seshan | sudo -S tc qdisc show dev wlp7s0').read()
-    print(tmpos)
+    error = 100*max_area/1400
+    print("P, I, D, (E) --->", P_fix, I_fix, D_fix, error)
+#    tmpos = os.popen('echo seshan | sudo -S tc qdisc show dev wlp7s0').read()
+#    print(tmpos)
 
     # Compute correction based on angle/position error
     left = int(100 - 1*P_fix - 1*D_fix - 0.02*I_fix)
     right = int(100 + 1*P_fix + 1*D_fix + 0.02*I_fix)
-    data = str(left) + ";" + str(right)
+    #print(error)
+    data = str(left) + ";" + str(right) + ";" + str(error)
 
      # send movement fix to robot
     send_msg = str(str(data)).encode()
