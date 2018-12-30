@@ -59,16 +59,25 @@ while True:
             power[0] = int(power[0])/3
             power[1] = int(power[1])/3
             if ip == "127.0.0.1":
-               picam = power
+               if power[0] > 0 or power[1] > 0:
+                  picam = power
+               else:
+                  picam = cam0
             elif ip == "192.168.1.30" and port == 4000:
-               cam0 = power
+               if power[0] > 0 or power[1] > 0:
+                  cam0 = power
+               else:
+                  cam0 = picam
             elif ip == "192.168.1.30" and port == 4001:
-               cam1 = power
+               if power[0] > 0 or power[1] > 0:
+                  cam1 = power
+               else:
+                  cam1 = cam0
                # Move motors at power sent from server
-            avgpower = [(picam[0]+cam0[0]+cam1[0])/3,(picam[1]+cam0[1]+cam1[1])/3]
+            avgpower = [(2*picam[0]+cam0[0]+cam1[0])/4,(2*picam[1]+cam0[1]+cam1[1])/4]
             print("L: "+str(avgpower[0])+" R: "+str(avgpower[1]))
-#            LMotor.setSpeed(avgpower[0])
-#            RMotor.setSpeed(avgpower[1])
+            LMotor.setSpeed(avgpower[0])
+            RMotor.setSpeed(avgpower[1])
          except Exception as e:
             print("FAILURE TO RECV.." + str(e.args) + "..RECONNECTING")
             try:

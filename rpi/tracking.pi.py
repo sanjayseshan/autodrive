@@ -68,7 +68,20 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
                         best_blackcont = cont
 
                 if not blackconts:
-                        # skip if didn't find a line
+                        # if robot not found --> done
+                        data = str(0) + ";" + str(0)
+                        
+                        # send movement fix to robot
+                        send_msg = str(str(data)).encode()
+                        try:
+                                sock.sendto(send_msg, robot_address)
+                        except Exception as e:
+                                print("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
+                                try:
+                                        print("sending " + send_msg)
+                                        sock.sendto(send_msg, robot_address)
+                                except:
+                                        print("FAILED.....Giving up :-( - pass;")
                         continue
 
                 # create a rectangle to represent the line and find
