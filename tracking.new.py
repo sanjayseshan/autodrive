@@ -19,10 +19,9 @@ print ("Active on port: " + str(Lport))
 robot_address = (host, Rport)
 
 print("init camera on /dev/video"+sys.argv[1])
-#time.sleep(1)
 
 # set up robot colors
-if sys.argv[1] == "0" or sys.argv[1] == "1":
+if sys.argv[1] == "0" or sys.argv[1] == "1": # for new Logitech camera
     lower_green=np.array([35,60,50])
     upper_green=np.array([105,220,140])
     lower_black=np.array([0,0,0])
@@ -38,7 +37,7 @@ if sys.argv[1] == "0" or sys.argv[1] == "1":
 
     # set up camera and opencv variables
     cam = cv2.VideoCapture(int(sys.argv[1]))
-else:
+else: # for old Logitech camera
     lower_green=np.array([75,60,50])
     upper_green=np.array([105,220,140])
     lower_black=np.array([0,0,0])
