@@ -15,9 +15,9 @@ s.bind(("",PORT))
 
 address = (HOST, PORT)
 
-cam0=[0,0]
-cam1=[0,0]
-picam=[0,0]
+cam0=[0,0,0]
+cam1=[0,0,0]
+picam=[0,0,0]
 
 #s.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
 try: 
@@ -56,8 +56,9 @@ while True:
             ip,port=tmp
             power = data.decode().split(';')
             print(ip+":"+str(port)+" --> "+data.decode())
-            power[0] = int(power[0])/3
-            power[1] = int(power[1])/3
+            power[0] = int(power[0])/2
+            power[1] = int(power[1])/2
+            power[2] = float(power[2])
             if ip == "127.0.0.1":
                if power[0] > 0 or power[1] > 0:
                   picam = power
@@ -74,7 +75,7 @@ while True:
                else:
                   cam1 = cam0
                # Move motors at power sent from server
-            avgpower = [(2*picam[0]+cam0[0]+cam1[0])/4,(2*picam[1]+cam0[1]+cam1[1])/4]
+            avgpower = [int((picam[2]*picam[0]+cam0[2]*cam0[0]+cam1[2]*cam1[0])/(picam[2]+cam0[2]+cam1[2])),int((picam[2]*picam[1]+cam0[2]*cam0[1]+cam1[2]*cam1[1])/(picam[2]+cam0[2]+cam1[2]))]
             print("L: "+str(avgpower[0])+" R: "+str(avgpower[1]))
             LMotor.setSpeed(avgpower[0])
             RMotor.setSpeed(avgpower[1])
