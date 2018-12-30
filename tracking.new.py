@@ -35,7 +35,7 @@ if sys.argv[1] == "0" or sys.argv[1] == "1": # for new Logitech camera
     lower_orange = np.array([0,120,120])
     upper_orange = np.array([40,255,255])
 
-    # set up camera and opencv variables
+    # set up camera
     cam = cv2.VideoCapture(int(sys.argv[1]))
 else: # for old Logitech camera
     lower_green=np.array([75,60,50])
@@ -51,9 +51,10 @@ else: # for old Logitech camera
     lower_orange = np.array([0,120,120])
     upper_orange = np.array([40,255,255])
 
-    # set up camera and opencv variables
+    # set up camera
     cam = cv2.VideoCapture(int(sys.argv[1]))
 
+#set up opencv variables
 kernelOpen=np.ones((5,5))
 kernelClose=np.ones((20,20))
 font=cv2.FONT_HERSHEY_SIMPLEX
@@ -64,7 +65,9 @@ gmax=0
 rmax=0
 lastP_fix = 0
 I_fix=0
-camid=sys.argv[1]
+
+camid=sys.argv[1] # which camera is used --> simply an identification method
+
 while True:
     cv2.waitKey(10)
     
@@ -74,7 +77,7 @@ while True:
     orig_img = img.copy()
     imgHSV= cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
-    # identify the green regions
+    # identify the green regions --> estimates the position of the robot
     greenmask=cv2.inRange(imgHSV,lower_green,upper_green)
     # this removes noise by eroding and filling in the regions
     greenmaskOpen=cv2.morphologyEx(greenmask,cv2.MORPH_OPEN,kernelOpen)
@@ -94,8 +97,9 @@ while True:
         cv2.drawContours(img, best_greencont, -1, (0,255,0), 3)
         M = cv2.moments(best_greencont)
         greencx,greency = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
-    robotimg = imgHSV[max(greency-200,0):greency+200,max(greencx-300,0):greencx+300]
+    robotimg = imgHSV[max(greency-200,0):greency+200,max(greencx-300,0):greencx+300] # crop frame to be around robot only
 
+    
 
     greenmask=cv2.inRange(robotimg,lower_green,upper_green)
     # this removes noise by eroding and filling in the regions
@@ -118,9 +122,6 @@ while True:
         M = cv2.moments(best_greencont)
         greencx,greency = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
 
-
-
-        
     # identify the red regions - red is tricky sine it is both 170-180 and 0-10
     # in the hue range
     redmask0 = cv2.inRange(robotimg, lower_red, upper_red)
@@ -216,7 +217,6 @@ while True:
         if area > max_area:
             max_area = area
             best_blackcont = cont
-        #print("A: "+str(max_area))
 
     if not blackconts:
         # skip if didn't find a line
@@ -255,6 +255,7 @@ while True:
     D_fix = lineang - ang
     # the line angle guesswork is sometimes off by 180 degrees. detect and
     # fix this error here
+    # essentially the derivative in a PID controller
     if D_fix < -90:
         D_fix += 180
     elif D_fix > 90:
@@ -292,7 +293,7 @@ while True:
     elif P_fix > 90:
         P_fix -= 180
 
-    I_fix = P_fix + 0.5*I_fix
+    I_fix = P_fix + 0.5*I_fix # Integral controller is just the sum of the P_fix with an exponential decay rate of 0.5
 
     lastP_fix = P_fix
     
