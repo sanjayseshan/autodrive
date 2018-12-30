@@ -72,7 +72,6 @@ while True:
     ret, cap_img=cam.read()
     img=cv2.resize(cap_img,(xdim,ydim))
     orig_img = img.copy()
-    #cv2.imshow("raw", orig_img)
     imgHSV= cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
     # identify the green regions
@@ -81,8 +80,6 @@ while True:
     greenmaskOpen=cv2.morphologyEx(greenmask,cv2.MORPH_OPEN,kernelOpen)
     greenmaskClose=cv2.morphologyEx(greenmaskOpen,cv2.MORPH_CLOSE,kernelClose)
     greenconts, h = cv2.findContours(greenmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    #cv2.imshow("greenmask",imggreen)
-
     # Finding bigest green area and save the contour
     max_area = 0
     for cont in greenconts:
@@ -105,7 +102,6 @@ while True:
     greenmaskOpen=cv2.morphologyEx(greenmask,cv2.MORPH_OPEN,kernelOpen)
     greenmaskClose=cv2.morphologyEx(greenmaskOpen,cv2.MORPH_CLOSE,kernelClose)
     greenconts, h = cv2.findContours(greenmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    #cv2.imshow("greenmask",imggreen)
 
     # Finding bigest green area and save the contour
     max_area = 0
@@ -127,9 +123,6 @@ while True:
         
     # identify the red regions - red is tricky sine it is both 170-180 and 0-10
     # in the hue range
-#    redmask0 = cv2.inRange(imgHSV, lower_red, upper_red)
-#    redmask1 = cv2.inRange(imgHSV, lower_red2, upper_red2)
-#    redmask = redmask0 + redmask1
     redmask0 = cv2.inRange(robotimg, lower_red, upper_red)
     redmask1 = cv2.inRange(robotimg, lower_red2, upper_red2)
     redmask = redmask0 + redmask1
@@ -137,7 +130,6 @@ while True:
     redmaskOpen=cv2.morphologyEx(redmask,cv2.MORPH_OPEN,kernelOpen)
     redmaskClose=cv2.morphologyEx(redmaskOpen,cv2.MORPH_CLOSE,kernelClose)
     redconts, h = cv2.findContours(redmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    #cv2.imshow("redmask", imgred)
 
     # Finding bigest red area and save the contour
     max_area = 0
@@ -147,7 +139,6 @@ while True:
             max_area = area
             rmax = max_area
             best_redcont = cont
-#    print("max: "+str(max_area))
             
     # identify the middle of the biggest red region
     if redconts and max_area > 5000:
@@ -156,7 +147,6 @@ while True:
         redcx,redcy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
 
 
-    #cv2.imshow("rectangles",img)
     if not (redconts and greenconts and gmax > 5000 and rmax > 5000):
         # if robot not found --> done
         data = str(0) + ";" + str(0) + ";" + str(0)
@@ -195,7 +185,6 @@ while True:
 
     # draw some robot lines on the screen and display
     cv2.line(robotimg, (greencx,greency), (redcx,redcy), (200,0,200),3)
-#    cv2.putText(img,str(ang),(10, 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
     cv2.imshow("cam"+camid,img)
     cv2.imshow("robotimg"+camid,robotimg)
 
@@ -213,14 +202,11 @@ while True:
     elif boxY < cropsize:
         boxY = cropsize
     crop_img = robotimg[int(abs(boxY-cropsize)):int(abs(boxY+cropsize)), int(abs(boxX-cropsize)):int(abs(boxX+cropsize))]
-#    cv2.circle(crop_img,(cropsize,cropsize),5,(0,255,0),-1)
 
     # find the black regions in the cropped image (this is the line)
     blackmask=cv2.inRange(crop_img,lower_black,upper_black)
     blackmaskOpen=cv2.morphologyEx(blackmask,cv2.MORPH_OPEN,kernelOpen)
-    #cv2.imshow("boxmask1",blackmaskOpen)
     blackmaskClose=cv2.morphologyEx(blackmaskOpen,cv2.MORPH_CLOSE,kernelClose)
-    #cv2.imshow("boxmask",blackmaskClose)
     blackconts, h = cv2.findContours(blackmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     #Finding the largest black region
@@ -238,12 +224,10 @@ while True:
 
     # create a rectangle to represent the line and find
     # the angle of the rectangle on the screen.
-#    cv2.drawContours(crop_img, best_blackcont, -1, (0,0,255), 3)
     blackbox = cv2.minAreaRect(best_blackcont)
     drawblackbox = cv2.boxPoints(blackbox)
     drawblackbox = np.int0(drawblackbox)
     cv2.drawContours(crop_img,[drawblackbox],0,(0,255,0),3)
-    #cv2.imshow("boxline",crop_img)
     (x_min, y_min), (w_min, h_min), lineang = blackbox
     # Unfortunately, opencv only gives rectangles angles from 0 to -90 so we
     # need to do some guesswork to get the right quadrant for the angle
@@ -321,7 +305,6 @@ while True:
     # Compute correction based on angle/position error
     left = int(100 - 1*P_fix - 1*D_fix - 0.02*I_fix)
     right = int(100 + 1*P_fix + 1*D_fix + 0.02*I_fix)
-    #print(error)
     data = str(left) + ";" + str(right) + ";" + str(error)
 
      # send movement fix to robot
