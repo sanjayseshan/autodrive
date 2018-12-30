@@ -10,15 +10,16 @@ import time
 
 # set up network socket/addresses
 host = '192.168.1.15'
-port = 5000
+Lport = 4000+int(sys.argv[1])
+Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-sock.bind(("", port))
-print ("Active on port: " + str(port))
-robot_address = (host, port)
+sock.bind(("", Lport))
+print ("Active on port: " + str(Lport))
+robot_address = (host, Rport)
 
 print("init camera on /dev/video"+sys.argv[1])
-time.sleep(1)
+#time.sleep(1)
 
 # set up robot colors
 if sys.argv[1] == "0":
@@ -38,13 +39,13 @@ if sys.argv[1] == "0":
     # set up camera and opencv variables
     cam = cv2.VideoCapture(0)
 else:
-    lower_green=np.array([35,60,50])
+    lower_green=np.array([75,60,50])
     upper_green=np.array([105,220,140])
     lower_black=np.array([0,0,0])
-    upper_black=np.array([80,100,100])
+    upper_black=np.array([180,100,70])
     lower_red = np.array([0,100,100])
-    upper_red = np.array([50,255,255])
-    lower_red2 = np.array([160,200,100])
+    upper_red = np.array([20,255,255])
+    lower_red2 = np.array([160,100,100])
     upper_red2 = np.array([180,255,255])
     lower_blue = np.array([85,31,63])
     upper_blue = np.array([138,106,127])
@@ -63,15 +64,15 @@ cropsize = 80
 gmax=0
 rmax=0
 lastP_fix = 0
-
+I_fix=0
 while True:
     cv2.waitKey(10)
-
+    
     # grab image, resize, save a copy and convert to HSV
     ret, cap_img=cam.read()
     img=cv2.resize(cap_img,(xdim,ydim))
     orig_img = img.copy()
-    cv2.imshow("raw", orig_img)
+    #cv2.imshow("raw", orig_img)
     imgHSV= cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
     # identify the green regions
@@ -124,9 +125,22 @@ while True:
         M = cv2.moments(best_redcont)
         redcx,redcy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
 
-    cv2.imshow("rectangles",img)
+    #cv2.imshow("rectangles",img)
     if not (redconts and greenconts and gmax > 5000 and rmax > 5000):
         # if robot not found --> done
+        data = str(0) + ";" + str(0)
+        
+        # send movement fix to robot
+        send_msg = str(str(data)).encode()
+        try:
+            sock.sendto(send_msg, robot_address)
+        except Exception as e:
+            print("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
+            try:
+                print("sending " + send_msg)
+                sock.sendto(send_msg, robot_address)
+            except:
+                print("FAILED.....Giving up :-( - pass;")
         continue
 
     # find the angle from the center of green to center of red
@@ -172,7 +186,9 @@ while True:
     # find the black regions in the cropped image (this is the line)
     blackmask=cv2.inRange(crop_img,lower_black,upper_black)
     blackmaskOpen=cv2.morphologyEx(blackmask,cv2.MORPH_OPEN,kernelOpen)
+    cv2.imshow("boxmask1",blackmaskOpen)
     blackmaskClose=cv2.morphologyEx(blackmaskOpen,cv2.MORPH_CLOSE,kernelClose)
+    cv2.imshow("boxmask",blackmaskClose)
     blackconts, h = cv2.findContours(blackmaskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     #Finding the largest black region
@@ -194,7 +210,7 @@ while True:
     drawblackbox = cv2.boxPoints(blackbox)
     drawblackbox = np.int0(drawblackbox)
     cv2.drawContours(crop_img,[drawblackbox],0,(0,255,0),3)
-    cv2.imshow("boxline",crop_img)
+    #cv2.imshow("boxline",crop_img)
     (x_min, y_min), (w_min, h_min), lineang = blackbox
     # Unfortunately, opencv only gives rectangles angles from 0 to -90 so we
     # need to do some guesswork to get the right quadrant for the angle
@@ -259,9 +275,9 @@ while True:
     elif P_fix > 90:
         P_fix -= 180
 
-    I_fix = P_fix + lastP_fix
+    I_fix = P_fix + 0.5*I_fix
 
-    lastP_fix = I_fix*0.5
+    lastP_fix = P_fix
     
     # print and save correction and current network conditions
     print("P, I, D --->", P_fix, I_fix, D_fix)
