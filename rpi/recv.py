@@ -76,7 +76,7 @@ while True:
                   cam1 = cam0
                # Move motors at power sent from server
             avgpower = [int((picam[2]*picam[0]+cam0[2]*cam0[0]+cam1[2]*cam1[0])/(picam[2]+cam0[2]+cam1[2])),int((picam[2]*picam[1]+cam0[2]*cam0[1]+cam1[2]*cam1[1])/(picam[2]+cam0[2]+cam1[2]))]
-            print("L: "+str(avgpower[0])+" R: "+str(avgpower[1]) + " T: " + time.time())
+            print("L: "+str(avgpower[0])+" R: "+str(avgpower[1]) + " T: " + str(time.time()))
             LMotor.setSpeed(avgpower[0])
             RMotor.setSpeed(avgpower[1])
          except Exception as e:
