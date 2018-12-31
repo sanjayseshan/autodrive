@@ -9,7 +9,7 @@ import sys
 import time
 
 # set up network socket/addresses
-host = '192.168.1.15'
+host = '192.168.1.5'
 Lport = 4000+int(sys.argv[1])
 Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -152,7 +152,7 @@ while True:
     if not (redconts and greenconts and gmax > 5000 and rmax > 5000):
         # if robot not found --> done
         data = str(0) + ";" + str(0) + ";" + str(0)
-        print("P, I, D, (E) --->", 0, 0, 0, 0)
+        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
 
 
         # send movement fix to robot
@@ -224,7 +224,7 @@ while True:
     if not (blackconts and max_area > 500):
         # skip if didn't find a line
         data = str(0) + ";" + str(0) + ";" + str(0)
-        print("P, I, D, (E) --->", 0, 0, 0, 0)
+        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
 
 
         # send movement fix to robot
@@ -317,7 +317,7 @@ while True:
     
     # print and save correction and current network conditions
     error = 100*max_area/1400
-    print("P, I, D, (E) --->", P_fix, I_fix, D_fix, error)
+    print("P, I, D, (E), (T) --->", P_fix, I_fix, D_fix, error, time.time())
 #    tmpos = os.popen('echo seshan | sudo -S tc qdisc show dev wlp7s0').read()
 #    print(tmpos)
 

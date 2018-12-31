@@ -71,7 +71,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
                         # if robot not found --> done
                         data = str(0) + ";" + str(0) + ";" + str(0)
 
-                        print("P, I, D, (E) --->", 0, 0, 0, 0)
+                        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
 
                         # send movement fix to robot
                         send_msg = str(str(data)).encode()
@@ -121,7 +121,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         lastP_fix = P_fix
         print(max_area)
         error = 100*max_area/6000
-        print("P, I, D, (E) --->", P_fix, I_fix, D_fix, error)
+        print("P, I, D, (E), (T) --->", P_fix, I_fix, D_fix, error, time.time())
         
         # Compute correction based on angle/position error
         left = int(100 - 1*P_fix - 1*D_fix - 0.02*I_fix)
