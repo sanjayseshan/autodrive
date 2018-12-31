@@ -75,8 +75,8 @@ while True:
     ret, cap_img=cam.read()
     img=cv2.resize(cap_img,(xdim,ydim))
     orig_img = img.copy()
-    imgHSV= cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-    cv2.imshow("cam_raw"+camid,orig_img)
+    imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    cv2.imshow("cam_raw"+camid,img)
 
     # identify the green regions --> estimates the position of the robot
     greenmask=cv2.inRange(imgHSV,lower_green,upper_green)
@@ -98,10 +98,12 @@ while True:
         cv2.drawContours(img, best_greencont, -1, (0,255,0), 3)
         M = cv2.moments(best_greencont)
         greencx,greency = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
-    robotimg = imgHSV[max(greency-200,0):greency+200,max(greencx-300,0):greencx+300] # crop frame to be around robot only
 
-    
+    # cv2.imshow("cam_contg"+camid,img)
 
+    # crop frame to be around robot only        
+    robotimg = imgHSV[max(greency-200,0):greency+200,max(greencx-300,0):greencx+300] 
+ 
     greenmask=cv2.inRange(robotimg,lower_green,upper_green)
     # this removes noise by eroding and filling in the regions
     greenmaskOpen=cv2.morphologyEx(greenmask,cv2.MORPH_OPEN,kernelOpen)
@@ -144,7 +146,7 @@ while True:
             
     # identify the middle of the biggest red region
     if redconts and max_area > 5000:
-        cv2.drawContours(robotimg, best_redcont, -1, (0,255,0), 3)
+        cv2.drawContours(img, best_redcont, -1, (0,255,0), 3)
         M = cv2.moments(best_redcont)
         redcx,redcy = int(M['m10']/M['m00']), int(M['m01']/M['m00'])
 
@@ -188,9 +190,9 @@ while True:
             ang = 360 + ang
 
     # draw some robot lines on the screen and display
-    cv2.line(robotimg, (greencx,greency), (redcx,redcy), (200,0,200),3)
+    cv2.line(img, (greencx,greency), (redcx,redcy), (200,0,200),3)
     #cv2.imshow("cam"+camid,img)
-    cv2.imshow("robotimg"+camid,robotimg)
+    cv2.imshow("robotimg"+camid,img)
 
     # find a small region in front of the robot and crop that part of the image
     ylen = (greency-redcy)
