@@ -76,6 +76,7 @@ while True:
     img=cv2.resize(cap_img,(xdim,ydim))
     orig_img = img.copy()
     imgHSV= cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+    cv2.imshow("cam_raw"+camid,orig_img)
 
     # identify the green regions --> estimates the position of the robot
     greenmask=cv2.inRange(imgHSV,lower_green,upper_green)
@@ -151,7 +152,9 @@ while True:
     if not (redconts and greenconts and gmax > 5000 and rmax > 5000):
         # if robot not found --> done
         data = str(0) + ";" + str(0) + ";" + str(0)
-        
+        print("P, I, D, (E) --->", 0, 0, 0, 0)
+
+
         # send movement fix to robot
         send_msg = str(str(data)).encode()
         try:
@@ -186,7 +189,7 @@ while True:
 
     # draw some robot lines on the screen and display
     cv2.line(robotimg, (greencx,greency), (redcx,redcy), (200,0,200),3)
-    cv2.imshow("cam"+camid,img)
+    #cv2.imshow("cam"+camid,img)
     cv2.imshow("robotimg"+camid,robotimg)
 
     # find a small region in front of the robot and crop that part of the image
@@ -218,8 +221,23 @@ while True:
             max_area = area
             best_blackcont = cont
 
-    if not blackconts:
+    if not (blackconts and max_area > 500):
         # skip if didn't find a line
+        data = str(0) + ";" + str(0) + ";" + str(0)
+        print("P, I, D, (E) --->", 0, 0, 0, 0)
+
+
+        # send movement fix to robot
+        send_msg = str(str(data)).encode()
+        try:
+            sock.sendto(send_msg, robot_address)
+        except Exception as e:
+            print("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
+            try:
+                print("sending " + send_msg)
+                sock.sendto(send_msg, robot_address)
+            except:
+                print("FAILED.....Giving up :-( - pass;")
         continue
 
     # create a rectangle to represent the line and find

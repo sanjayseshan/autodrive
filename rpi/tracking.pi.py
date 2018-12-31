@@ -70,7 +70,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
                 if not blackconts:
                         # if robot not found --> done
                         data = str(0) + ";" + str(0) + ";" + str(0)
-                        
+
+                        print("P, I, D, (E) --->", 0, 0, 0, 0)
+
                         # send movement fix to robot
                         send_msg = str(str(data)).encode()
                         try:
@@ -131,7 +133,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         try:
                 sock.sendto(send_msg, robot_address)
         except Exception as e:
-                print("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
+                prinxt("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
                 try:
                         print("sending " + send_msg)
                         sock.sendto(send_msg, robot_address)

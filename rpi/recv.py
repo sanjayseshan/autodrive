@@ -51,11 +51,11 @@ while True:
          data = ''
          try: 
             indata = s.recvfrom(1500)
-            print(indata)
+#            print(indata)
             data,tmp = indata
             ip,port=tmp
             power = data.decode().split(';')
-            print(ip+":"+str(port)+" --> "+data.decode())
+#            print(ip+":"+str(port)+" --> "+data.decode())
             power[0] = int(power[0])/2
             power[1] = int(power[1])/2
             power[2] = float(power[2])
