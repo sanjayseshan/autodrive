@@ -76,15 +76,15 @@ while True:
                   cam1 = cam0
                # Move motors at power sent from server
             avgpower = [int((picam[2]*picam[0]+cam0[2]*cam0[0]+cam1[2]*cam1[0])/(picam[2]+cam0[2]+cam1[2])),int((picam[2]*picam[1]+cam0[2]*cam0[1]+cam1[2]*cam1[1])/(picam[2]+cam0[2]+cam1[2]))]
-            print("L: "+str(avgpower[0])+" R: "+str(avgpower[1]))
+            print("L: "+str(avgpower[0])+" R: "+str(avgpower[1]) + " T: " + time.time())
             LMotor.setSpeed(avgpower[0])
             RMotor.setSpeed(avgpower[1])
          except Exception as e:
-            print("FAILURE TO RECV.." + str(e.args) + "..RECONNECTING")
+#            print("FAILURE TO RECV.." + str(e.args) + "..RECONNECTING")
             try:
                s.close()
                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                s.bind(("",PORT))
-               print("connected to "+HOST)
+#               print("connected to "+HOST)
             except:
                pass
