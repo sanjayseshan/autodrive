@@ -8,7 +8,7 @@ import time
 import atexit
 
 #connect to server
-HOST = '192.168.1.30'    # The remote host
+HOST = '192.168.1.18'    # The remote host
 PORT = 5000             # The same port as used by the server
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(("",PORT))
@@ -64,12 +64,12 @@ while True:
                   picam = power
                else:
                   picam = cam0
-            elif ip == "192.168.1.30" and port == 4000:
+            elif ip == "192.168.1.18" and port == 4000:
                if power[0] > 0 or power[1] > 0:
                   cam0 = power
                else:
                   cam0 = picam
-            elif ip == "192.168.1.30" and port == 4001:
+            elif ip == "192.168.1.18" and port == 4001:
                if power[0] > 0 or power[1] > 0:
                   cam1 = power
                else:
