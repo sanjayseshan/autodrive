@@ -376,8 +376,8 @@ while True:
 #    print(tmpos)
 
     # Compute correction based on angle/position error
-    left = int(100 - 1*P_fix - 1*D_fix - 0.02*I_fix)
-    right = int(100 + 1*P_fix + 1*D_fix + 0.02*I_fix)
+    left = int(100 - 2.5*P_fix - 1*D_fix - 0.02*I_fix)
+    right = int(100 + 2.5*P_fix + 1*D_fix + 0.02*I_fix)
     data = str(left) + ";" + str(right) + ";" + str(error)
     try:
         cv2.imshow("robotimg"+camid,img)
