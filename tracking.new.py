@@ -9,7 +9,7 @@ import sys
 import time
 
 # set up network socket/addresses
-host = '192.168.1.19'
+host = '192.168.1.24'
 Lport = 4000+int(sys.argv[1])
 Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -232,7 +232,7 @@ while True:
 
     # draw some robot lines on the screen and display
     cv2.line(img, (greencx,greency), (redcx+max(greencx-300,0),redcy+max(greency-200,0)), (200,0,200),3)
-    cv2.imshow("robotimg",robotimg)
+    #cv2.imshow("robotimg",robotimg)
 
     #cv2.imshow("cam"+camid,img)
 
@@ -257,7 +257,7 @@ while True:
         Ycropsize = cropsize
     
     crop_img = img[int(abs(boxY-Ycropsize)):int(abs(boxY+Ycropsize)), int(abs(boxX-Xcropsize)):int(abs(boxX+Xcropsize))]
-    cv2.imshow("CROP",crop_img)
+    #cv2.imshow("CROP",crop_img)
     # find the black regions in the cropped image (this is the line)
     blackmask=cv2.inRange(crop_img,lower_black,upper_black)
     blackmaskOpen=cv2.morphologyEx(blackmask,cv2.MORPH_OPEN,kernelOpen)

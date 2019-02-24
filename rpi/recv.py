@@ -8,7 +8,7 @@ import time
 import atexit
 
 #connect to server
-HOST = '192.168.1.30'    # The remote host
+HOST = '192.168.1.17'    # The remote host
 PORT = 5000             # The same port as used by the server
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.bind(("",PORT))
