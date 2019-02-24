@@ -64,12 +64,12 @@ while True:
                   picam = power
                else:
                   picam = cam0
-            elif ip == "192.168.1.18" and port == 4000:
+            elif ip == "192.168.1.17" and port == 4000:
                if power[0] > 0 or power[1] > 0:
                   cam0 = power
                else:
                   cam0 = picam
-            elif ip == "192.168.1.18" and port == 4001:
+            elif ip == "192.168.1.17" and port == 4001:
                if power[0] > 0 or power[1] > 0:
                   cam1 = power
                else:
