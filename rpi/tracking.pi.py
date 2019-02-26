@@ -143,7 +143,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         if not blackconts:
                 # if robot not found --> done
                         data = str(0) + ";" + str(0) + ";" + str(0)
-
+                        time.sleep(2)
                         print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
 
                         # send movement fix to robot
