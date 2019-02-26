@@ -90,8 +90,25 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         # grab the raw NumPy array representing the image, then initialize the timestamp
 	# and occupied/unoccupied text
     
-        if time.time()-lastTime > interval:
+        if (time.time()-lastTime) > interval:
             lastTime = time.time()
+            print "Pausing"
+            data = str(0) + ";" + str(0) + ";" + str(0)
+
+            print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
+            
+            # send movement fix to robot
+            send_msg = str(str(data)).encode()
+            try:
+                sock.sendto(send_msg, robot_address)
+            except Exception as e:
+                print("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
+                try:
+                    print("sending " + send_msg)
+                    sock.sendto(send_msg, robot_address)
+                except:
+                    print("FAILED.....Giving up :-( - pass;")
+                    continue
             time.sleep(duration)
 
             
