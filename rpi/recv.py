@@ -56,9 +56,9 @@ while True:
             ip,port=tmp
             power = data.decode().split(';')
 #            print(ip+":"+str(port)+" --> "+data.decode())
-            power[0] = int(power[0])/4.0
-            power[1] = int(power[1])/4.0
-            power[2] = float(power[2])/4.0
+            power[0] = int(power[0])/3.0
+            power[1] = int(power[1])/3.0
+            power[2] = float(power[2])/3.0
             if ip == "127.0.0.1":
                if power[0] > 0 or power[1] > 0:
                   picam = power
