@@ -56,9 +56,9 @@ while True:
             ip,port=tmp
             power = data.decode().split(';')
 #            print(ip+":"+str(port)+" --> "+data.decode())
-            power[0] = int(power[0])/2.5
-            power[1] = int(power[1])/2.5
-            power[2] = float(power[2])/2.5
+            power[0] = int(power[0])/3.0
+            power[1] = int(power[1])/3.0
+            power[2] = float(power[2])/3.0
             if ip == "127.0.0.1":
                if power[0] > 0 or power[1] > 0:
                   picam = power
@@ -81,7 +81,7 @@ while True:
             RMotor.setSpeed(avgpower[1])
          except Exception as e:
 #            print("FAILURE TO RECV.." + str(e.args) + "..RECONNECTING")
-            time.sleep(0.2)
+            #time.sleep(0.4)
             LMotor.setSpeed(0)
             RMotor.setSpeed(0)
             print("L: "+str(0)+" R: "+str(0) + " T: " + str(time.time()))
