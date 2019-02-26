@@ -90,7 +90,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         # grab the raw NumPy array representing the image, then initialize the timestamp
 	# and occupied/unoccupied text
         print (time.time()-lastTime) 
-        if (time.time()-lastTime) > interval:
+        if (time.time()-lastTime) > float(interval):
             lastTime = time.time()
             print "Pausing"
             data = str(0) + ";" + str(0) + ";" + str(0)
@@ -109,7 +109,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
                 except:
                     print("FAILED.....Giving up :-( - pass;")
                     continue
-            time.sleep(duration)
+            time.sleep(float(duration))
 
             
         cap_img = frame.array
