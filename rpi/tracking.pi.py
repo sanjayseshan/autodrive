@@ -135,7 +135,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         max_area = 0
         for cont in blackconts:
                 area = cv2.contourArea(cont)
-                if area > max_area:
+                if area > max_area and area > 1000:
                         max_area = area
                         best_blackcont = cont
                 #print best_blackcont

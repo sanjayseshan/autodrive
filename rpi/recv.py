@@ -81,6 +81,7 @@ while True:
             RMotor.setSpeed(avgpower[1])
          except Exception as e:
 #            print("FAILURE TO RECV.." + str(e.args) + "..RECONNECTING")
+            time.sleep(0.2)
             LMotor.setSpeed(0)
             RMotor.setSpeed(0)
             print("L: "+str(0)+" R: "+str(0) + " T: " + str(time.time()))
