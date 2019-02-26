@@ -81,6 +81,8 @@ while True:
             RMotor.setSpeed(avgpower[1])
          except Exception as e:
             print("FAILURE TO RECV.." + str(e.args) + "..RECONNECTING")
+            LMotor.setSpeed(0.0)
+            RMotor.setSpeed(0.0)
             try:
                s.close()
                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
