@@ -41,6 +41,9 @@ I_fix=0
 
 colors = []
 
+interval = sys.argv[1]
+duration = sys.argv[2]
+
 def on_mouse_click (event, x, y, flags, frame):
     global thiscol,lower_green,upper_green,lower_red,upper_red,lower_black,upper_black
     if event == cv2.EVENT_LBUTTONUP:
@@ -82,11 +85,17 @@ cv2.destroyAllWindows()
 
 #main()
 
-
+lastTime = time.time()
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         # grab the raw NumPy array representing the image, then initialize the timestamp
 	# and occupied/unoccupied text
-	cap_img = frame.array
+    
+        if time.time()-lastTime > interval:
+            lastTime = time.time()
+            time.sleep(duration)
+
+            
+        cap_img = frame.array
  
 	# show the frame
 	#cv2.imshow("Frame", img)
