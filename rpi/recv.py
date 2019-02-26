@@ -82,8 +82,8 @@ while True:
          except Exception as e:
 #            print("FAILURE TO RECV.." + str(e.args) + "..RECONNECTING")
             #time.sleep(0.4)
-#            LMotor.setSpeed(0)
-#            RMotor.setSpeed(0)
+            LMotor.setSpeed(0)
+            RMotor.setSpeed(0)
             print("L: "+str(0)+" R: "+str(0) + " T: " + str(time.time()))
             try:
                s.close()
