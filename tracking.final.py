@@ -10,7 +10,7 @@ import time
 import math
 
 # set up network socket/addresses
-host = '192.168.1.24'
+host = '192.168.1.26'
 Lport = 4000+int(sys.argv[1])
 Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -172,6 +172,12 @@ while True:
 
     # find largest green region
     best_greencont, greencx, greency, greenarea = FindColor(imgHSV, lower_green, upper_green, 5000)
+    if (greencx == -1):
+        # if robot not found --> done
+        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
+        SendToRobot(0,0,0)
+        continue
+
     cv2.drawContours(img, best_greencont, -1, (0,255,0), 3)
 
     # crop frame to be around robot only
@@ -179,15 +185,15 @@ while True:
 
     # find red region in this cropped area
     best_redcont, redcx_incrop, redcy_incrop, redarea = FindColor(robotimgHSV, lower_red, upper_red, 5000)
-    redcx = redcx_incrop+max(greencx-300,0);
-    redcy = redcy_incrop+max(greency-200,0);
-    cv2.drawContours(img, best_redcont+[max(greencx-300,0),max(greency-200,0)], -1, (0,255,0), 3)
-
-    if not (redcx > -1 and greencx > -1):
+    if (redcx_incrop == -1):
         # if robot not found --> done
         print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
         SendToRobot(0,0,0)
         continue
+
+    redcx = redcx_incrop+max(greencx-300,0);
+    redcy = redcy_incrop+max(greency-200,0);
+    cv2.drawContours(img, best_redcont+[max(greencx-300,0),max(greency-200,0)], -1, (0,255,0), 3)
 
     ang = ComputeRobotAngle(greencx, greency, redcx, redcy)
         
@@ -214,11 +220,13 @@ while True:
     else:
         Ycropsize = cropsize
 
-    lineimgHSV = imgHSV[int(abs(boxY-Ycropsize)):int(abs(boxY+Ycropsize)), int(abs(boxX-Xcropsize)):int(abs(boxX+Xcropsize))]
-    
-    # find black region in cropped area
-    best_blackcont, blackcx_incrop, blackcy_incrop, blackarea = FindColor(lineimgHSV, lower_black, upper_black, 200)
-
+    if (Xcropsize > 0) and (Ycropsize > 0):
+        lineimgHSV = imgHSV[int(abs(boxY-Ycropsize)):int(abs(boxY+Ycropsize)), int(abs(boxX-Xcropsize)):int(abs(boxX+Xcropsize))]
+        # find black region in cropped area
+        best_blackcont, blackcx_incrop, blackcy_incrop, blackarea = FindColor(lineimgHSV, lower_black, upper_black, 200)
+    else:
+        blackcx_incrop = -1
+        
     if (blackcx_incrop == -1):
         # skip if didn't find a line
         print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
