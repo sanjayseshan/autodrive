@@ -102,7 +102,6 @@ def FindColor(imageHSV, lower_col, upper_col, min_area):
             max_area = area
             gmax = max_area
             best_cont = cont
-    cx,cy = (300,200)
     # identify the middle of the biggest  region
     if conts and max_area > min_area:
         M = cv2.moments(best_cont)
@@ -113,7 +112,7 @@ def FindColor(imageHSV, lower_col, upper_col, min_area):
 
 def SendToRobot(left, right, error):
     global sock
-    
+
     data = str(left) + ";" + str(right) + ";" + str(error)
     send_msg = str(str(data)).encode()
     try:
@@ -164,7 +163,7 @@ while True:
         cv2.imshow("robotimg"+camid,img)
     except:
         pass
-    
+
     # grab image, resize, save a copy and convert to HSV
     ret, cap_img=cam.read()
     img=cv2.resize(cap_img,(xdim,ydim))
@@ -196,7 +195,7 @@ while True:
     cv2.drawContours(img, best_redcont+[max(greencx-300,0),max(greency-200,0)], -1, (0,255,0), 3)
 
     ang = ComputeRobotAngle(greencx, greency, redcx, redcy)
-        
+
     # draw some robot lines on the screen and display
     cv2.line(img, (greencx,greency), (redcx,redcy), (200,0,200),3)
     cv2.putText(img, "robot ang: "+str(ang), (10, 160), font, 2, (0, 0, 0), 2)
@@ -226,7 +225,7 @@ while True:
         best_blackcont, blackcx_incrop, blackcy_incrop, blackarea = FindColor(lineimgHSV, lower_black, upper_black, 200)
     else:
         blackcx_incrop = -1
-        
+
     if (blackcx_incrop == -1):
         # skip if didn't find a line
         print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
@@ -320,7 +319,7 @@ while True:
     cv2.putText(img, "P_fix: "+str(P_fix), (10, 330), font, 2, (0, 0, 0), 2)
 
 
-        
+
     I_fix = P_fix + 0.5*I_fix # Integral controller is just the sum of the P_fix with an exponential decay rate of 0.5
 
     lastP_fix = P_fix
