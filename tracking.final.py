@@ -62,12 +62,7 @@ def calibrate():
         ret, cap_img=cam.read()
         img=cv2.resize(cap_img,(xdim,ydim))
         hsv = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-        if thiscol == "green":
-            cv2.putText(img, str("CLICK ON GREEN"), (10, 50), font, 2, (0, 0, 0), 2)
-        if thiscol == "red":
-             cv2.putText(img, str("CLICK ON ORANGE"), (10, 50), font, 2, (0, 0, 0), 2)
-        if thiscol == "black":
-            cv2.putText(img, str("CLICK ON BLACK"), (10, 50), font, 2, (0, 0, 0), 2)
+        cv2.putText(img, str("CLICK ON " + thiscol), (10, 50), font, 2, (0, 0, 0), 2)
         if colors:
             cv2.putText(img, "LAST: "+str(colors[-1]), (10, 100), font, 2, (0, 0, 0), 2)
         cv2.imshow('frame', img)
@@ -158,7 +153,7 @@ while True:
     imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
     # find largest green region
-    best_greencont, greencx, greency, greenarea = FindColor(imgHSV, lower_green, upper_green, 5000)
+    best_greencont, greencx, greency, greenarea = FindColor(imgHSV, lower_green, upper_green, 3000)
     if (greencx == -1):
         # if robot not found --> done
         print("ng P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
@@ -171,7 +166,7 @@ while True:
     robotimgHSV = imgHSV[max(greency-200,0):greency+200,max(greencx-300,0):greencx+300]
 
     # find red region in this cropped area
-    best_redcont, redcx_incrop, redcy_incrop, redarea = FindColor(robotimgHSV, lower_red, upper_red, 5000)
+    best_redcont, redcx_incrop, redcy_incrop, redarea = FindColor(robotimgHSV, lower_red, upper_red, 3000)
     if (redcx_incrop == -1):
         # if robot not found --> done
         print("nr P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
