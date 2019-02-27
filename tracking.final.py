@@ -10,7 +10,7 @@ import time
 import math
 
 # set up network socket/addresses
-host = '192.168.1.26'
+host = '192.168.1.11'
 Lport = 4000+int(sys.argv[1])
 Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -139,6 +139,7 @@ def ComputeRobotAngle(greencx, greency, redcx, redcy):
 calibrate()
 
 while True:
+ try:
     cv2.waitKey(10)
 
     try:
@@ -326,3 +327,5 @@ while True:
 
     # send movement fix to robot
     SendToRobot(left,right,error)
+ except:
+     pass
