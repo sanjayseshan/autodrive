@@ -10,7 +10,7 @@ import time
 import math
 
 # set up network socket/addresses
-host = '192.168.1.11'
+host = '192.168.1.13'
 Lport = 4000+int(sys.argv[1])
 Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
