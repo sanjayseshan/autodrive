@@ -18,7 +18,7 @@ sock.bind(("", Lport))
 print ("Active on port: " + str(Lport))
 robot_address = (host, Rport)
 
-# initialize the camera and grab a reference to the raw camera capture
+# initialize the camera
 camera = PiCamera()
 camera.resolution = (640, 480)
 camera.framerate = 32
@@ -37,41 +37,8 @@ I_fix=0
 lower_black=np.array([0,0,0])
 upper_black=np.array([180,125,80])
 
-colors = []
-thiscol = "black"
-
 interval = sys.argv[1]
 duration = sys.argv[2]
-
-def on_mouse_click (event, x, y, flags, frame):
-    global thiscol,lower_green,upper_green,lower_red,upper_red,lower_black,upper_black
-    if event == cv2.EVENT_LBUTTONUP:
-        colors.append(frame[y,x].tolist())
-        print(thiscol)
-        print(frame[y,x].tolist())
-        if thiscol == "black":
-            lower_black=np.array([frame[y,x].tolist()[0]-255,frame[y,x].tolist()[1]-100,frame[y,x].tolist()[2]-100])
-            upper_black=np.array([frame[y,x].tolist()[0]+255,frame[y,x].tolist()[1]+50,frame[y,x].tolist()[2]+50])
-            thiscol = "none"
-
-def calibrate():
-    for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-        cap_img = frame.array
-        img=cv2.resize(cap_img,(xdim,ydim))
-        orig_img = img.copy()
-        hsv = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
-        if thiscol == "black":
-            cv2.putText(img, str("CLICK ON BLACK"), (10, 50), cv2.FONT_HERSHEY_PLAIN, 2, (20, 255, 255), 2)
-        if colors:
-            cv2.putText(img, str(colors[-1]), (10, 100), cv2.FONT_HERSHEY_PLAIN, 2, (20, 255, 255), 2)
-        cv2.imshow('frame', img)
-        cv2.setMouseCallback('frame', on_mouse_click, hsv)
-    	rawCapture.truncate(0)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-        if thiscol == "none":
-                break
-    cv2.destroyAllWindows()
 
 def SendToRobot(left, right, error):
     global sock
@@ -82,17 +49,17 @@ def SendToRobot(left, right, error):
           sock.sendto(send_msg, robot_address)
           #print send_msg
     except Exception as e:
-          print("FAILURE TO SEND.." + str(e.args) + "..RECONNECTING")
+          print("FAIL - RECONNECT.." + str(e.args))
           try:
                   print("sending " + send_msg)
                   sock.sendto(send_msg, robot_address)
           except:
-                  print("FAILED.....Giving up :-( - pass;")
+                  print("FAILED.....Giving up :-(")
 
 def FindColor(imageHSV, lower_col, upper_col, min_area):
-    # identify the colored regions --> estimates the position of the robot
+    # find the colored regions
     mask=cv2.inRange(imageHSV,lower_col,upper_col)
-    # this removes noise by eroding and filling in the regions
+    # this removes noise by eroding and filling in
     maskOpen=cv2.morphologyEx(mask,cv2.MORPH_OPEN,kernelOpen)
     maskClose=cv2.morphologyEx(maskOpen,cv2.MORPH_CLOSE,kernelClose)
     conts, h = cv2.findContours(maskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
@@ -115,8 +82,6 @@ def FindColor(imageHSV, lower_col, upper_col, min_area):
 
 lastTime = time.time()
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-    # grab the raw NumPy array representing the image, then initialize the timestamp
-    # and occupied/unoccupied text
     if (time.time()-lastTime) > float(interval):
         print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
         SendToRobot(0,0,0)
@@ -149,7 +114,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     drawblackbox = np.int0(drawblackbox)
     (x_min, y_min), (w_min, h_min), lineang = blackbox
 
-    # draw a line with the estimate of line location and angle
+    # draw line with the estimate of location and angle
     cv2.line(full_img, (int(x_min),int(y_min+200)), (160,40+200), (200,0,200),2)
     cv2.circle(full_img,(int(x_min),int(y_min+200)),3,(200,0,200),-1)
     deltaX = 0.333*(160-x_min)
