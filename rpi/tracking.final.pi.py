@@ -106,14 +106,14 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         SendToRobot(0,0,0)
         continue
 
-    cv2.drawContours(full_img,best_blackcont+[0,200],-1,(0,255,0),3)
-    cv2.imshow("2",full_img)
+    #cv2.drawContours(full_img,best_blackcont+[0,200],-1,(0,255,0),3)
     # create a rectangle to represent the line and find
     # the angle of the rectangle on the screen.
     blackbox = cv2.minAreaRect(best_blackcont)
     drawblackbox = cv2.cv.BoxPoints(blackbox)
     drawblackbox = np.int0(drawblackbox)
     (x_min, y_min), (w_min, h_min), lineang = blackbox
+    cv2.imshow("2",full_img)
 
     # draw line with the estimate of location and angle
     cv2.line(full_img, (int(x_min),int(y_min+200)), (160,40+200), (200,0,200),2)
