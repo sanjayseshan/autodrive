@@ -39,7 +39,7 @@ colors = []
 thiscol = "green"
 
 def on_mouse_click (event, x, y, flags, frame):
-    global thiscol,lower_green,upper_green,lower_red,upper_red,lower_black,upper_black
+    global thiscol,lower_green,upper_green,lower_red,upper_red
     if event == cv2.EVENT_LBUTTONUP:
         colors.append(frame[y,x].tolist())
         print(thiscol)
@@ -160,7 +160,7 @@ while True:
     best_greencont, greencx, greency, greenarea = FindColor(imgHSV, lower_green, upper_green, 5000)
     if (greencx == -1):
         # if robot not found --> done
-        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
+        print("ng P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
         SendToRobot(0,0,0)
         continue
 
@@ -173,7 +173,7 @@ while True:
     best_redcont, redcx_incrop, redcy_incrop, redarea = FindColor(robotimgHSV, lower_red, upper_red, 5000)
     if (redcx_incrop == -1):
         # if robot not found --> done
-        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
+        print("nr P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
         SendToRobot(0,0,0)
         continue
 
@@ -216,7 +216,7 @@ while True:
 
     if (blackcx_incrop == -1):
         # skip if didn't find a line
-        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
+        print("nb P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
         SendToRobot(0,0,0)
         continue
 
