@@ -160,7 +160,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     I_fix = P_fix+0.5*I_fix
     D_fix = P_fix-lastP_fix
     lastP_fix = P_fix
-    error = 100*max_area/5500
+    error = 100*blackarea/5500
     print("P, I, D, (E), (T) --->", P_fix, I_fix, D_fix, error, time.time())
 
     # Compute correction based on angle/position error
