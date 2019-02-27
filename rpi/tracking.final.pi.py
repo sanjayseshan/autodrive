@@ -20,15 +20,15 @@ robot_address = (host, Rport)
 
 # initialize the camera
 camera = PiCamera()
-camera.resolution = (640, 480)
+camera.resolution = (320, 240)
 camera.framerate = 32
-rawCapture = PiRGBArray(camera, size=(640, 480))
+rawCapture = PiRGBArray(camera, size=(320, 240))
 kernelOpen=np.ones((5,5))
 kernelClose=np.ones((20,20))
 # allow the camera to warmup
 time.sleep(0.1)
 xdim = 320
-ydim = 280
+ydim = 240
 cropsize = 80
 gmax=0
 rmax=0
@@ -90,7 +90,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         lastTime = time.time()
 
     cap_img = frame.array
-    full_img=cv2.resize(cap_img,(xdim,ydim))
+    full_img = cap_img
+    #full_img=cv2.resize(cap_img,(xdim,ydim))
 #    cv2.imshow("1",full_img)
 
     imgHSV = cv2.cvtColor(full_img,cv2.COLOR_BGR2HSV)
