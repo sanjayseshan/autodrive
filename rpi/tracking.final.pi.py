@@ -42,7 +42,6 @@ duration = sys.argv[2]
 
 def SendToRobot(left, right, error):
     global sock
-
     data = str(left) + ";" + str(right) + ";" + str(error)
     send_msg = str(str(data)).encode()
     try:
@@ -90,6 +89,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     cap_img = frame.array
     full_img=cv2.resize(cap_img,(xdim,ydim))
+    cv2.imshow("1",full_img)
+
     imgHSV = cv2.cvtColor(full_img,cv2.COLOR_BGR2HSV)
     imgHSV_crop = imgHSV[200:280, 0:320]
 
@@ -106,7 +107,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         continue
 
     cv2.drawContours(full_img,best_blackcont+[0,200],-1,(0,255,0),3)
-
+    cv2.imshow("2",full_img)
     # create a rectangle to represent the line and find
     # the angle of the rectangle on the screen.
     blackbox = cv2.minAreaRect(best_blackcont)

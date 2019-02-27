@@ -72,9 +72,11 @@ def calibrate():
     capture.release()
     cv2.destroyAllWindows()
 
-def FindColor(imageHSV, lower_col, upper_col, min_area):
+def FindColor(imageHSV, lower_col, upper_col, min_area, col):
     # find the colored regions
     mask=cv2.inRange(imageHSV,lower_col,upper_col)
+    cv2.imshow(col,mask)
+
     # this removes noise by eroding
     # and filling in the regions
     maskOpen=cv2.morphologyEx(mask,cv2.MORPH_OPEN,kernelOpen)
@@ -149,10 +151,11 @@ while True:
     # grab image, resize, save a copy and convert to HSV
     ret, cap_img=cam.read()
     img=cv2.resize(cap_img,(xdim,ydim))
+    cv2.imshow("1",img)
     imgHSV = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
 
     # find largest green region
-    best_greencont, greencx, greency, greenarea = FindColor(imgHSV, lower_green, upper_green, 3000)
+    best_greencont, greencx, greency, greenarea = FindColor(imgHSV, lower_green, upper_green, 3000, "green")
     if (greencx == -1):
         # if robot not found --> done
         print("ng P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
@@ -165,7 +168,7 @@ while True:
     robotimgHSV = imgHSV[max(greency-200,0):greency+200,max(greencx-300,0):greencx+300]
 
     # find red region in this cropped area
-    best_redcont, redcx_incrop, redcy_incrop, redarea = FindColor(robotimgHSV, lower_red, upper_red, 3000)
+    best_redcont, redcx_incrop, redcy_incrop, redarea = FindColor(robotimgHSV, lower_red, upper_red, 3000, "red")
     if (redcx_incrop == -1):
         # if robot not found --> done
         print("nr P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
@@ -175,12 +178,14 @@ while True:
     redcx = redcx_incrop+max(greencx-300,0);
     redcy = redcy_incrop+max(greency-200,0);
     cv2.drawContours(img, best_redcont+[max(greencx-300,0),max(greency-200,0)], -1, (0,255,0), 3)
+    cv2.imshow("2",img)
 
     ang=ComputeRobotAngle(greencx,greency,redcx,redcy)
 
     # draw some robot lines on the screen and display
     cv2.line(img, (greencx,greency), (redcx,redcy), (200,0,200),3)
     cv2.putText(img, "robot ang: "+str(ang), (10, 160), font, 2, (0, 0, 0), 2)
+    cv2.imshow("3",img)
 
     # find a small region in front of the robot and
     # crop that part of the image
@@ -205,7 +210,7 @@ while True:
     if (Xcropsize > 0) and (Ycropsize > 0):
         lineimgHSV = imgHSV[int(abs(boxY-Ycropsize)):int(abs(boxY+Ycropsize)), int(abs(boxX-Xcropsize)):int(abs(boxX+Xcropsize))]
         # find black region in cropped area
-        best_blackcont, blackcx_incrop, blackcy_incrop, blackarea = FindColor(lineimgHSV, lower_black, upper_black, 200)
+        best_blackcont, blackcx_incrop, blackcy_incrop, blackarea = FindColor(lineimgHSV, lower_black, upper_black, 200, "black")
     else:
         blackcx_incrop = -1
 
@@ -230,6 +235,7 @@ while True:
     drawblackbox = cv2.boxPoints(blackbox)
     drawblackbox = np.int0(drawblackbox)
     cv2.drawContours(img,[drawblackbox],0,(0,255,0),3)
+    cv2.imshow("4",img)
 
     # Unfortunately, opencv only gives rectangles angles
     # from 0 to -90 so we need to do some guesswork to
@@ -252,6 +258,7 @@ while True:
     cv2.circle(img,(int(x_min_real),int(y_min_real)),3,(200,0,200),-1)
     cv2.line(img, (int(x_min_real),int(y_min_real)), (boxX,boxY), (200,0,200),2)
     cv2.putText(img, "line ang: "+str(lineang), (10, 190), font, 2, (0, 0, 0), 2)
+    cv2.imshow("5",img)
 
     # The direction error is the difference in angle of
     # the line and robot essentially the derivative in
