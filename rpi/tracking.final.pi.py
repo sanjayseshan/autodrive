@@ -108,8 +108,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
         SendToRobot(0,0,0)
         continue
 
-    ctr = full_img.copy()
-    cv2.drawContours(ctr,best_blackcont+[0,200],-1,(0,255,0),3)
+    #ctr = full_img.copy()
+    #cv2.drawContours(ctr,best_blackcont+[0,200],-1,(0,255,0),3)
 #    cv2.imshow("2",ctr)
 
     # create a rectangle to represent the line and find
