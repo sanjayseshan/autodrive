@@ -58,7 +58,7 @@ def SendToRobot(left, right, error):
 def FindColor(imageHSV, lower_col, upper_col, min_area):
     # find the colored regions
     mask=cv2.inRange(imageHSV,lower_col,upper_col)
-    cv2.imshow("mask",mask)
+#    cv2.imshow("mask",mask)
 
     # this removes noise by eroding and filling in
     maskOpen=cv2.morphologyEx(mask,cv2.MORPH_OPEN,kernelOpen)
@@ -91,7 +91,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     cap_img = frame.array
     full_img=cv2.resize(cap_img,(xdim,ydim))
-    cv2.imshow("1",full_img)
+#    cv2.imshow("1",full_img)
 
     imgHSV = cv2.cvtColor(full_img,cv2.COLOR_BGR2HSV)
     imgHSV_crop = imgHSV[200:280, 0:320]
@@ -110,7 +110,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     ctr = full_img.copy()
     cv2.drawContours(ctr,best_blackcont+[0,200],-1,(0,255,0),3)
-    cv2.imshow("2",ctr)
+#    cv2.imshow("2",ctr)
 
     # create a rectangle to represent the line and find
     # the angle of the rectangle on the screen.
@@ -121,7 +121,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     drawblackbox = cv2.cv.BoxPoints(blackbox)
     drawblackbox = np.int0(drawblackbox)
     cv2.drawContours(full_img,[drawblackbox],-1,(0,255,0),3)
-    cv2.imshow("3",full_img)
+#    cv2.imshow("3",full_img)
 
     # draw line with the estimate of location and angle
     cv2.line(full_img, (int(x_min),int(y_min+200)), (160,40+200), (200,0,200),2)
