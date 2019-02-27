@@ -130,7 +130,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     key = cv2.waitKey(1) & 0xFF
 
-    best_blackcont, blackcx_incrop, blackcy_incrop, blackarea = FindColor(imgHSV_crop, lower_black, upper_black, 200)
+    best_blackcont, blackcx_incrop, blackcy_incrop, blackarea = FindColor(imgHSV_crop, lower_black, upper_black, 10)
 
     rawCapture.truncate(0)
 
