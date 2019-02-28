@@ -265,6 +265,11 @@ while True:
     # the line and robot essentially the derivative in
     # a PID controller
     D_fix = lineang - ang
+    if D_fix < -300:
+        D_fix += 360
+    elif D_fix > 300:
+        D_fix -= 360
+
 
     # the line angle guesswork is sometimes off by 180
     # degrees. detect and fix this error here
