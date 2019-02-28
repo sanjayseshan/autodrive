@@ -56,6 +56,10 @@ while True:
         message[1] = right
         confidence = float(message[2])/3.0
         message[2] = confidence
+        message[3] = float(message[3])
+        message[4] = float(message[4])
+        message[5] = float(message[5])
+
         if ip == "127.0.0.1":
            if left > 0 or right > 0:
               picam = message
