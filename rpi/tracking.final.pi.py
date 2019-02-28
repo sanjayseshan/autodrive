@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import struct
 import socket
+import random
 
 # set up network socket/addresses
 host = 'localhost'
@@ -37,7 +38,9 @@ I_fix=0
 lower_black=np.array([0,0,0])
 upper_black=np.array([180,125,80])
 
-interval = sys.argv[1]
+#interval = sys.argv[1]
+update = sys.argv[1]
+interval = random.randint(1, 10)
 duration = sys.argv[2]
 
 def SendToRobot(left, right, error, P, I, D):
@@ -82,12 +85,14 @@ def FindColor(imageHSV, lower_col, upper_col, min_area):
 
 
 lastTime = time.time()
+threshold = 0.4
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     if (time.time()-lastTime) > float(interval):
-        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
-        SendToRobot(0,0,0,0,0,0)
-        time.sleep(float(duration))
         lastTime = time.time()
+        if (random.randint(1, 100) < threshold):
+            time.sleep(float(interval))
+            print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
+            SendToRobot(0,0,0,0,0,0)
 
     cap_img = frame.array
     full_img = cap_img

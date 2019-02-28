@@ -8,6 +8,7 @@ from time import sleep
 import sys
 import time
 import math
+import random
 
 # set up network socket/addresses
 host = '192.168.1.5'
@@ -38,7 +39,9 @@ I_fix=0
 colors = []
 thiscol = "green"
 
-interval = sys.argv[2]
+#interval = sys.argv[2]
+update = sys.argv[2]
+interval = random.randint(1, 10)
 duration = sys.argv[3]
 
 def on_mouse_click (event, x, y, flags, frame):
@@ -141,15 +144,18 @@ def ComputeRobotAngle(greencx, greency, redcx, redcy):
 
 calibrate()
 lastTime = time.time()
+threshold = 0.4
 
 while True:
  try:
     cv2.waitKey(10)
     if (time.time()-lastTime) > float(interval):
-        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
-        SendToRobot(0,0,0,0,0,0)
-        time.sleep(float(duration))
         lastTime = time.time()
+        if (random.randint(1, 100) < threshold):
+            time.sleep(float(interval))
+            print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
+            SendToRobot(0,0,0,0,0,0)
+            
     try:
         cv2.putText(img, "green: "+str(colors[0]), (10, 50), font, 2, (0, 0, 0), 2)
         cv2.putText(img, "orange: "+str(colors[1]), (10, 80), font, 2, (0, 0, 0), 2)
