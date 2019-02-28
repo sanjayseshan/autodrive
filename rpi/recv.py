@@ -56,19 +56,19 @@ while True:
            if left > 0 or right > 0:
               picam = message
            else:
-              picam = cam0 # why??? shouldn't this be {0,0,0,0,0,0}
+              picam = [0,0,0,0,0,0]
            piout = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
         elif ip == "192.168.1.17" and port == 4000:
            if left > 0 or right > 0:
               cam0 = message
            else:
-              cam0 = picam # why???
+              cam0 = [0,0,0,0,0,0] # why???
            cam0out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
         elif ip == "192.168.1.17" and port == 4001:
            if left > 0 or right > 0:
               cam1 = message
            else:
-              cam1 = cam0 # why???
+              cam1 = [0,0,0,0,0,0] # why???
            cam1out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
 
         # Move motors at power sent from server
