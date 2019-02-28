@@ -10,7 +10,7 @@ import time
 import math
 
 # set up network socket/addresses
-host = '192.168.1.13'
+host = '192.168.1.10'
 Lport = 4000+int(sys.argv[1])
 Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -37,6 +37,9 @@ lastP_fix = 0
 I_fix=0
 colors = []
 thiscol = "green"
+
+interval = sys.argv[2]
+duration = sys.argv[3]
 
 def on_mouse_click (event, x, y, flags, frame):
     global thiscol,lower_green,upper_green,lower_red,upper_red
@@ -65,7 +68,7 @@ def calibrate():
         cv2.putText(img, str("CLICK ON " + thiscol), (10, 50), font, 2, (0, 0, 0), 2)
         if colors:
             cv2.putText(img, "LAST: "+str(colors[-1]), (10, 100), font, 2, (0, 0, 0), 2)
-#        cv2.imshow('frame', img)
+        cv2.imshow('frame', img)
         cv2.setMouseCallback('frame', on_mouse_click, hsv)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -137,11 +140,16 @@ def ComputeRobotAngle(greencx, greency, redcx, redcy):
 
 
 calibrate()
+lastTime = time.time()
 
 while True:
  try:
     cv2.waitKey(10)
-
+    if (time.time()-lastTime) > float(interval):
+        print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
+        SendToRobot(0,0,0)
+        time.sleep(float(duration))
+        lastTime = time.time()
     try:
         cv2.putText(img, "green: "+str(colors[0]), (10, 50), font, 2, (0, 0, 0), 2)
         cv2.putText(img, "orange: "+str(colors[1]), (10, 80), font, 2, (0, 0, 0), 2)
@@ -265,6 +273,11 @@ while True:
     # the line and robot essentially the derivative in
     # a PID controller
     D_fix = lineang - ang
+    if D_fix < -300:
+        D_fix += 360
+    elif D_fix > 300:
+        D_fix -= 360
+
 
     # the line angle guesswork is sometimes off by 180
     # degrees. detect and fix this error here
