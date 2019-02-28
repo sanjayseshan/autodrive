@@ -89,7 +89,8 @@ while True:
         LMotor.setSpeed(avgpower[0])
         RMotor.setSpeed(avgpower[1])
     except Exception as e:
-        print("L: "+str(0)+" R: "+str(0) + " T: " + str(time.time()))
+        #print("L: "+str(0)+" R: "+str(0) + " T: " + str(time.time()))
+        print(str(time.time())+","+str(0)+","+str(0) + "," +str(0)+","+str(0)+","+str(0))
         try:
            s.close()
            s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
