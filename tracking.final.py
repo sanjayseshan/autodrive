@@ -101,9 +101,9 @@ def FindColor(imageHSV, lower_col, upper_col, min_area, col):
     else:
         return 0,-1,-1,-1
 
-def SendToRobot(left, right, error):
+def SendToRobot(left, right, error, P, I, D):
     global sock
-    data = str(left)+";"+str(right)+";"+str(error)
+    data = str(left)+";"+str(right)+";"+str(error)";"+str(P)";"+str(I)";"+str(D)
     send_msg = str(str(data)).encode()
     try:
           sock.sendto(send_msg, robot_address)
@@ -147,7 +147,7 @@ while True:
     cv2.waitKey(10)
     if (time.time()-lastTime) > float(interval):
         print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
-        SendToRobot(0,0,0)
+        SendToRobot(0,0,0,0,0,0)
         time.sleep(float(duration))
         lastTime = time.time()
     try:
@@ -168,7 +168,7 @@ while True:
     if (greencx == -1):
         # if robot not found --> done
         print("ng P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
-        SendToRobot(0,0,0)
+        SendToRobot(0,0,0,0,0,0)
         continue
 
     cv2.drawContours(img,best_greencont,-1,(0,255,0),3)
@@ -181,7 +181,7 @@ while True:
     if (redcx_incrop == -1):
         # if robot not found --> done
         print("nr P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
-        SendToRobot(0,0,0)
+        SendToRobot(0,0,0,0,0,0)
         continue
 
     redcx = redcx_incrop+max(greencx-300,0);
@@ -226,7 +226,7 @@ while True:
     if (blackcx_incrop == -1):
         # skip if didn't find a line
         print("nb P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
-        SendToRobot(0,0,0)
+        SendToRobot(0,0,0,0,0,0)
         continue
 
     blackcx = blackcx_incrop+int(abs(boxX-Xcropsize))
@@ -339,6 +339,6 @@ while True:
     right = int(100 + 1.0*P_fix + .5*D_fix + 0.02*I_fix)
 
     # send movement fix to robot
-    SendToRobot(left,right,error)
+    SendToRobot(left,right,error, P_fix, I_fix, D_fix)
  except:
      pass

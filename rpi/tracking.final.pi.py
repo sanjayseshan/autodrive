@@ -40,9 +40,9 @@ upper_black=np.array([180,125,80])
 interval = sys.argv[1]
 duration = sys.argv[2]
 
-def SendToRobot(left, right, error):
+def SendToRobot(left, right, error, P, I, D):
     global sock
-    data = str(left) + ";" + str(right) + ";" + str(error)
+    data = str(left)+";"+str(right)+";"+str(error)";"+str(P)";"+str(I)";"+str(D)
     send_msg = str(str(data)).encode()
     try:
           sock.sendto(send_msg, robot_address)
@@ -85,7 +85,7 @@ lastTime = time.time()
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     if (time.time()-lastTime) > float(interval):
         print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
-        SendToRobot(0,0,0)
+        SendToRobot(0,0,0,0,0,0)
         time.sleep(float(duration))
         lastTime = time.time()
 
@@ -106,7 +106,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     if (blackcx_incrop == -1):
         # if robot not found --> done
         print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
-        SendToRobot(0,0,0)
+        SendToRobot(0,0,0,0,0,0)
         continue
 
     #ctr = full_img.copy()
@@ -142,7 +142,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     left = int(100 - 1.5*P_fix - 1*D_fix - 0.01*I_fix)
     right = int(100 + 1.5*P_fix + 1*D_fix + 0.01*I_fix)
 
-    SendToRobot(left,right,error)
+    SendToRobot(left,right,error, P_fix, I_fix, D_fix)
+
 
     # if the `q` key was pressed, break from the loop
     if key == ord("q"):

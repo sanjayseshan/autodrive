@@ -39,6 +39,7 @@ RMotor = mh.getMotor(1)
 
 RMotor.run(Adafruit_MotorHAT.FORWARD)
 LMotor.run(Adafruit_MotorHAT.BACKWARD)
+print(str("time,left,right,piLeft,piRight,piConf,piP,piI,piD,cam0Left,cam0Right,cam0Conf,cam0P,cam0I,cam0D,cam1Left,cam1Right,cam1Conf,cam1P,cam1I,cam1D")
 
 while True:
     # receive messages from server
@@ -47,28 +48,33 @@ while True:
         indata = s.recvfrom(1500)
         data,tmp = indata
         ip,port=tmp
-        power = data.decode().split(';')
-        power[0] = int(power[0])/3.0
-        power[1] = int(power[1])/3.0
-        power[2] = float(power[2])/3.0
+        message = data.decode().split(';')
+        left = int(message[0])/3.0
+        right = int(message[1])/3.0
+        confidence = float(message[2])/3.0
         if ip == "127.0.0.1":
-           if power[0] > 0 or power[1] > 0:
-              picam = power
+           if left > 0 or right > 0:
+              picam = message
            else:
-              picam = cam0
+              picam = cam0 # why??? shouldn't this be {0,0,0,0,0,0}
+           piout = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
         elif ip == "192.168.1.17" and port == 4000:
-           if power[0] > 0 or power[1] > 0:
-              cam0 = power
+           if left > 0 or right > 0:
+              cam0 = message
            else:
-              cam0 = picam
+              cam0 = picam # why???
+           cam0out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
         elif ip == "192.168.1.17" and port == 4001:
-           if power[0] > 0 or power[1] > 0:
-              cam1 = power
+           if left > 0 or right > 0:
+              cam1 = message
            else:
-              cam1 = cam0
+              cam1 = cam0 # why???
+           cam1out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
+
         # Move motors at power sent from server
         avgpower = [int((picam[2]*picam[0]+cam0[2]*cam0[0]+cam1[2]*cam1[0])/(picam[2]+cam0[2]+cam1[2])),int((picam[2]*picam[1]+cam0[2]*cam0[1]+cam1[2]*cam1[1])/(picam[2]+cam0[2]+cam1[2]))]
-        print("L: "+str(avgpower[0])+" R: "+str(avgpower[1]) + " T: " + str(time.time()))
+#        print("L: "+str(avgpower[0])+" R: "+str(avgpower[1]) + " T: " + str(time.time()))
+        print(str(time.time()))+","+str(avgpower[0])+","+str(avgpower[1]) + "," +piout+","+cam0out+","+cam1out)
         LMotor.setSpeed(avgpower[0])
         RMotor.setSpeed(avgpower[1])
     except Exception as e:
