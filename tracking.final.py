@@ -10,7 +10,7 @@ import time
 import math
 
 # set up network socket/addresses
-host = '192.168.1.10'
+host = '192.168.1.13'
 Lport = 4000+int(sys.argv[1])
 Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -30,7 +30,7 @@ kernelClose=np.ones((20,20))
 font=cv2.FONT_HERSHEY_PLAIN
 xdim = 1280
 ydim = 720
-cropsize = 100
+cropsize = 75
 gmax=0
 rmax=0
 lastP_fix = 0
@@ -103,7 +103,7 @@ def FindColor(imageHSV, lower_col, upper_col, min_area, col):
 
 def SendToRobot(left, right, error, P, I, D):
     global sock
-    data = str(left)+";"+str(right)+";"+str(error)";"+str(P)";"+str(I)";"+str(D)
+    data = str(left)+";"+str(right)+";"+str(error)+";"+str(P)+";"+str(I)+";"+str(D)
     send_msg = str(str(data)).encode()
     try:
           sock.sendto(send_msg, robot_address)
@@ -244,7 +244,7 @@ while True:
     drawblackbox = cv2.boxPoints(blackbox)
     drawblackbox = np.int0(drawblackbox)
     cv2.drawContours(img,[drawblackbox],0,(0,255,0),3)
-    #cv2.imshow("4",img)
+    cv2.imshow("4",lineimgHSV)
 
     # Unfortunately, opencv only gives rectangles angles
     # from 0 to -90 so we need to do some guesswork to
