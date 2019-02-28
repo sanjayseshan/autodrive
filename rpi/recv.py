@@ -16,9 +16,9 @@ address = (HOST, PORT)
 cam0=[0,0,0]
 cam1=[0,0,0]
 picam=[0,0,0]
-piout=""
-cam0out=""
-cam1out=""
+piout="0,0,0,0,0,0"
+cam0out="0,0,0,0,0,0"
+cam1out="0,0,0,0,0,0"
 
 try:
    s.sendto("HELLO".encode(),address)
