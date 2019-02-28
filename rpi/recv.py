@@ -16,6 +16,9 @@ address = (HOST, PORT)
 cam0=[0,0,0]
 cam1=[0,0,0]
 picam=[0,0,0]
+piout=""
+cam0out=""
+cam1out=""
 
 try:
    s.sendto("HELLO".encode(),address)
@@ -61,23 +64,23 @@ while True:
         message[5] = float(message[5])
 
         if ip == "127.0.0.1":
+           piout = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
            if left > 0 or right > 0:
               picam = message
            else:
               picam = [0,0,0,0,0,0]
-           piout = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
         elif ip == "192.168.1.17" and port == 4000:
+           cam0out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
            if left > 0 or right > 0:
               cam0 = message
            else:
               cam0 = [0,0,0,0,0,0] # why???
-           cam0out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
         elif ip == "192.168.1.17" and port == 4001:
+           cam1out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
            if left > 0 or right > 0:
               cam1 = message
            else:
               cam1 = [0,0,0,0,0,0] # why???
-           cam1out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
 
         # Move motors at power sent from server
         avgpower = [int((picam[2]*picam[0]+cam0[2]*cam0[0]+cam1[2]*cam1[0])/(picam[2]+cam0[2]+cam1[2])),int((picam[2]*picam[1]+cam0[2]*cam0[1]+cam1[2]*cam1[1])/(picam[2]+cam0[2]+cam1[2]))]
