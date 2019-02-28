@@ -42,7 +42,7 @@ duration = sys.argv[2]
 
 def SendToRobot(left, right, error, P, I, D):
     global sock
-    data = str(left)+";"+str(right)+";"+str(error)";"+str(P)+";"+str(I)+";"+str(D)
+    data = str(left)+";"+str(right)+";"+str(error)+";"+str(P)+";"+str(I)+";"+str(D)
     send_msg = str(str(data)).encode()
     try:
           sock.sendto(send_msg, robot_address)
