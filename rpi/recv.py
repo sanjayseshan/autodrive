@@ -51,8 +51,11 @@ while True:
         ip,port=tmp
         message = data.decode().split(';')
         left = int(message[0])/3.0
+        message[0] = left
         right = int(message[1])/3.0
+        message[1] = right
         confidence = float(message[2])/3.0
+        message[2] = confidence
         if ip == "127.0.0.1":
            if left > 0 or right > 0:
               picam = message
