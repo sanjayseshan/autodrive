@@ -46,7 +46,7 @@ while True:
     data = ''
     try:
         indata = s.recvfrom(1500)
-        print indata
+        #print indata
         data,tmp = indata
         ip,port=tmp
         message = data.decode().split(';')
