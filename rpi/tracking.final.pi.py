@@ -38,9 +38,9 @@ I_fix=0
 lower_black=np.array([0,0,0])
 upper_black=np.array([180,125,80])
 
-#interval = sys.argv[1]
+interval = sys.argv[1]
 update = sys.argv[1]
-interval = random.randint(1, 10)
+#interval = random.randint(1, 10)
 duration = sys.argv[2]
 
 def SendToRobot(left, right, error, P, I, D):
@@ -89,7 +89,9 @@ threshold = 0.4
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     if (time.time()-lastTime) > float(interval):
         lastTime = time.time()
-        if (random.randint(1, 100) < threshold):
+        randval = random.randint(1, 100)
+        print randval
+        if (randval < threshold):
             time.sleep(float(interval))
             print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
             SendToRobot(0,0,0,0,0,0)
