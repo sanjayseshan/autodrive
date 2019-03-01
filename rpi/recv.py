@@ -43,7 +43,7 @@ RMotor = mh.getMotor(1)
 RMotor.run(Adafruit_MotorHAT.FORWARD)
 LMotor.run(Adafruit_MotorHAT.BACKWARD)
 print(str("time,left,right,piLeft,piRight,piConf,piP,piI,piD,cam0Left,cam0Right,cam0Conf,cam0P,cam0I,cam0D,cam1Left,cam1Right,cam1Conf,cam1P,cam1I,cam1D"))
-
+avgpower = [0,0]
 while True:
     # receive messages from server
     data = ''
