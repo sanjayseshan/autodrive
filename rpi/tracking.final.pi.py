@@ -42,6 +42,7 @@ interval = sys.argv[1]
 update = sys.argv[1]
 #interval = random.randint(1, 10)
 duration = sys.argv[2]
+threshold = sys.argv[3]
 
 def SendToRobot(left, right, error, P, I, D):
     global sock
@@ -85,7 +86,7 @@ def FindColor(imageHSV, lower_col, upper_col, min_area):
 
 
 lastTime = time.time()
-threshold = 20
+#interval = 0.4
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     if (time.time()-lastTime) > float(interval):
         lastTime = time.time()
