@@ -40,9 +40,16 @@ colors = []
 thiscol = "green"
 
 #interval = sys.argv[2]
+#update = sys.argv[2]
+#interval = random.randint(1, 10)
+#duration = sys.argv[3]
+
+interval = sys.argv[2]
 update = sys.argv[2]
-interval = random.randint(1, 10)
+#interval = random.randint(1, 10)
 duration = sys.argv[3]
+threshold = int(sys.argv[4])
+
 
 def on_mouse_click (event, x, y, flags, frame):
     global thiscol,lower_green,upper_green,lower_red,upper_red
@@ -144,7 +151,6 @@ def ComputeRobotAngle(greencx, greency, redcx, redcy):
 
 calibrate()
 lastTime = time.time()
-threshold = 0.4
 
 while True:
  try:
