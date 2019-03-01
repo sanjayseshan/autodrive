@@ -85,12 +85,12 @@ def FindColor(imageHSV, lower_col, upper_col, min_area):
 
 
 lastTime = time.time()
-threshold = 0.4
+threshold = 20
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     if (time.time()-lastTime) > float(interval):
         lastTime = time.time()
         randval = random.randint(1, 100)
-        print randval
+        #print randval
         if (randval < threshold):
             time.sleep(float(interval))
             print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
