@@ -69,6 +69,7 @@ while True:
               picam = message
            else:
               picam = [0,0,0,0,0,0]
+
         elif ip == "192.168.1.17" and port == 4000:
            cam0out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
            if left > 0 or right > 0:
@@ -90,7 +91,8 @@ while True:
         RMotor.setSpeed(avgpower[1])
     except Exception as e:
         #print("L: "+str(0)+" R: "+str(0) + " T: " + str(time.time()))
-        print(str(time.time())+","+str(0)+","+str(0) + "," +str(0)+","+str(0)+","+str(0))
+        print(str(time.time())+","+str(avgpower[0])+","+str(avgpower[1]) + "," +str(piout)+","+str(cam0out)+","+str(cam1out)+",-1")
+#        print(str(time.time())+","+str(0)+","+str(0) + "," +str(0)+","+str(0)+","+str(0))
         try:
            s.close()
            s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
