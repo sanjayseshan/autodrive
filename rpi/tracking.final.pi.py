@@ -91,7 +91,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     if (time.time()-lastTime) > float(interval):
         lastTime = time.time()
         randval = random.randint(1, 100)
-        print randval
+        #print randval
         if (randval < threshold):
             time.sleep(float(interval))
             print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
