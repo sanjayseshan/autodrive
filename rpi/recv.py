@@ -70,13 +70,13 @@ while True:
            else:
               picam = [0,0,0,0,0,0]
 
-        elif ip == "192.168.1.17" and port == 4000:
+        elif ip == "192.168.1.21" and port == 4000:
            cam0out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
            if left > 0 or right > 0:
               cam0 = message
            else:
               cam0 = [0,0,0,0,0,0] # why???
-        elif ip == "192.168.1.17" and port == 4001:
+        elif ip == "192.168.1.21" and port == 4001:
            cam1out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
            if left > 0 or right > 0:
               cam1 = message
