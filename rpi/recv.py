@@ -84,15 +84,24 @@ while True:
               cam1 = [0,0,0,0,0,0] # why???
 
         # Move motors at power sent from server
-        camnum = 3
-        if picam[2] == 0:
-           camnum = camnum - 1
-        if cam0[2] == 0:
-           camnum = camnum - 1
-        if cam1[2] == 0:
-           camnum = camnum - 1
+        #camnum = 3
+        chosen = max([picam[2],cam0[2],cam1[2]])
+
+        if picam[2] == chosen:
+           avgpower=[int(picam[0]),int(picam[1])]
+        if cam0[2] == chosen:
+           avgpower=[int(cam0[0]),int(cam0[1])]
+        if cam1[2] == chosen:
+           avgpower=[int(cam1[0]),int(cam1[1])]
         
-        avgpower = [int((picam[0]+cam0[0]+cam1[0])/(camnum)),int((picam[1]+cam0[1]+cam1[1])/(camnum))]
+        #if picam[2] == 0:
+        #   camnum = camnum - 1
+        #if cam0[2] == 0:
+        #   camnum = camnum - 1
+        #if cam1[2] == 0:
+        #   camnum = camnum - 1
+        
+#        avgpower = [int((picam[0]+cam0[0]+cam1[0])/(camnum)),int((picam[1]+cam0[1]+cam1[1])/(camnum))]
 
 
 #        avgpower = [int((picam[2]*picam[0]+cam0[2]*cam0[0]+cam1[2]*cam1[0])/(picam[2]+cam0[2]+cam1[2])),int((picam[2]*picam[1]+cam0[2]*cam0[1]+cam1[2]*cam1[1])/(picam[2]+cam0[2]+cam1[2]))]
