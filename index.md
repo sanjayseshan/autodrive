@@ -2,122 +2,26 @@
 layout: default
 ---
 
-Text can be **bold**, _italic_, or ~~strikethrough~~.
+# Abstract
 
-[Link to another page](./another-page.html).
+XXX
 
-There should be whitespace between paragraphs.
+# Motivation
 
-There should be whitespace between paragraphs. We recommend including a README, or a file with information about your project.
+Market research predicts that the demand for autonomous vehicles will increase tenfold between 2019 and 2026. However, recent high-profile incidents, such as the fatal accidents with Uber and Tesla self-driving vehicles, have significantly impacted consumer confidence in this technology. A recent study by AAA reports that three-quarters of Americans are too afraid to ride in an autonomous vehicle and two-thirds feel less safe when self-driving cars are present. In order for autonomous cars to reach their potential, they must be made safer and more reliable. 
+Many of the past autonomous vehicle failures can be traced to failures in making accurate sensor observations. Existing approaches to improving autonomous driving focus on improving the already extensive on-vehicle sensor packages to ensure that the system always has access to the data necessary to ensure safe navigation. However, these sensors will always be limited by the view available from the autonomous vehicle. Sensors that already exist in the surrounding infrastructure, such as cameras mounted on roads and bridges, could provide autonomous vehicles with a much more complete view of their surroundings and enable much safer autonomous driving. My project explores the challenges associated with effectively combining the sensor observations made by on-vehicle and infrastructure sensors to improve autonomous driving performance and safety. 
 
-# Header 1
+# Brief Overview of Project
 
-This is a normal paragraph following a header. GitHub is a code hosting platform for version control and collaboration. It lets you and others work together on projects from anywhere.
+Currently, autonomous vehicle manufacturers focus only on adding on-vehicle sensors, providing a limited view from the car’s perspective, which often requires human intervention. My project looks at improving the performance and safety of autonomous vehicles by incorporating sensors that already exist in our infrastructure, such as CCTV cameras on bridges and buildings, along side the on-vehicle sensors. Through my experiments in a custom test-bed, I discovered that using external sensors significantly improves the performance of autonomous vehicles, but it is important which mathematical algorithm is used to fuse the data from multiple sensors.
 
-## Header 2
+# Awards
 
-> This is a blockquote following a header.
->
-> When something is important enough, you do it even if the odds are not in your favor.
+*  3rd Place in Engineering/Robotics at Pittsburgh Regional Science and Engineering Fair
+*  FedEx Sponsor award at Pittsburgh Regional Science and Engineering Fair
+*  1st Place Engineering at Pensylvania Junior Academy of Science Region 7
+*  Intel ISEF nomination
 
-### Header 3
+# Future Plans
 
-```js
-// Javascript code with syntax highlighting.
-var fun = function lang(l) {
-  dateformat.i18n = require('./lang/' + l)
-  return true;
-}
-```
-
-```ruby
-# Ruby code with syntax highlighting
-GitHubPages::Dependencies.gems.each do |gem, version|
-  s.add_dependency(gem, "= #{version}")
-end
-```
-
-#### Header 4
-
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-*   This is an unordered list following a header.
-
-##### Header 5
-
-1.  This is an ordered list following a header.
-2.  This is an ordered list following a header.
-3.  This is an ordered list following a header.
-
-###### Header 6
-
-| head1        | head two          | three |
-|:-------------|:------------------|:------|
-| ok           | good swedish fish | nice  |
-| out of stock | good and plenty   | nice  |
-| ok           | good `oreos`      | hmm   |
-| ok           | good `zoute` drop | yumm  |
-
-### There's a horizontal rule below this.
-
-* * *
-
-### Here is an unordered list:
-
-*   Item foo
-*   Item bar
-*   Item baz
-*   Item zip
-
-### And an ordered list:
-
-1.  Item one
-1.  Item two
-1.  Item three
-1.  Item four
-
-### And a nested list:
-
-- level 1 item
-  - level 2 item
-  - level 2 item
-    - level 3 item
-    - level 3 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-  - level 2 item
-  - level 2 item
-- level 1 item
-
-### Small image
-
-![Octocat](https://assets-cdn.github.com/images/icons/emoji/octocat.png)
-
-### Large image
-
-![Branching](https://guides.github.com/activities/hello-world/branching.png)
-
-
-### Definition lists can be used with HTML syntax.
-
-<dl>
-<dt>Name</dt>
-<dd>Godzilla</dd>
-<dt>Born</dt>
-<dd>1952</dd>
-<dt>Birthplace</dt>
-<dd>Japan</dd>
-<dt>Color</dt>
-<dd>Green</dd>
-</dl>
-
-```
-Long, single-line code blocks should not wrap. They should horizontally scroll if they are too long. This line should be long enough to demonstrate this.
-```
-
-```
-The final element.
-```
+Phase III of the project will look at: 1) controlling multiple vehicles concurrently; 2) more realistic testing using simulation software and actual car tests with wireless OBD-II interface; and 3) vehicle identification without color codes (using feature identification algorithms, such as SIFT)
