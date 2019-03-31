@@ -26,7 +26,7 @@ Phase II:
 *  1st Place Engineering at Pensylvania Junior Academy of Science Region 7
 *  Intel ISEF nomination
 
-Phase 1:
+Phase I:
 * 2nd Place in Engineering/Robotics at Pittsburgh Regional Science and Engineering Fair
 * XX Sponsor Award
 * XX Sponsor Award
