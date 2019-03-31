@@ -5,7 +5,7 @@ The code for phase I (PRSEF 2018) is in the old_system directory.
 
 tracking.final.py: This is the code to run on each infrastructure camera, which identifies the vehicle and computes steering adjustment. Adjustment is transmitted over UDP to the rpi vehicle.
 
-<code>python tracking.final.py "camid" "interval/duration" "null" "outage hreshold" </code>
+<code>python tracking.final.py "camid" "interval/duration" "null" "outage threshold" </code>
 
 rpi/: Code for the Raspberry Pi
 
