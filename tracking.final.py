@@ -39,14 +39,10 @@ I_fix=0
 colors = []
 thiscol = "green"
 
-#interval = sys.argv[2]
-#update = sys.argv[2]
-#interval = random.randint(1, 10)
-#duration = sys.argv[3]
+
 
 interval = sys.argv[2]
 update = sys.argv[2]
-#interval = random.randint(1, 10)
 duration = sys.argv[3]
 threshold = int(sys.argv[4])
 
@@ -88,7 +84,6 @@ def calibrate():
 def FindColor(imageHSV, lower_col, upper_col, min_area, col):
     # find the colored regions
     mask=cv2.inRange(imageHSV,lower_col,upper_col)
-#    cv2.imshow(col,mask)
 
     # this removes noise by eroding
     # and filling in the regions
@@ -199,14 +194,12 @@ while True:
     redcx = redcx_incrop+max(greencx-300,0);
     redcy = redcy_incrop+max(greency-200,0);
     cv2.drawContours(img, best_redcont+[max(greencx-300,0),max(greency-200,0)], -1, (0,255,0), 3)
-    #cv2.imshow("2",img)
 
     ang=ComputeRobotAngle(greencx,greency,redcx,redcy)
 
     # draw some robot lines on the screen and display
     cv2.line(img, (greencx,greency), (redcx,redcy), (200,0,200),3)
     cv2.putText(img, "robot ang: "+str(ang), (10, 160), font, 2, (0, 0, 0), 2)
-    #cv2.imshow("3",img)
 
     # find a small region in front of the robot and
     # crop that part of the image

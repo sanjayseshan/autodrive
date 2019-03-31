@@ -53,7 +53,7 @@ while True:
         data,tmp = indata
         ip,port=tmp
         message = data.decode().split(';')
-        left = int(message[0])/3.0
+        left = int(message[0])/3.0 # divide by 3.0 to make max power only 33%
         message[0] = left
         right = int(message[1])/3.0
         message[1] = right
@@ -75,7 +75,7 @@ while True:
            if left > 0 or right > 0:
               cam0 = message
            else:
-              cam0 = [0,0,0,0,0,0] # why???
+              cam0 = [0,0,0,0,0,0]
         elif ip == "192.168.1.21" and port == 4001:
            cam1out = str(message[0])+","+str(message[1])+","+str(message[2])+","+str(message[3])+","+str(message[4])+","+str(message[5])
            if left > 0 or right > 0:
@@ -84,36 +84,39 @@ while True:
               cam1 = [0,0,0,0,0,0] # why???
 
         # Move motors at power sent from server
-        #camnum = 3
         chosen = max([picam[2],cam0[2],cam1[2]])
 
-        if picam[2] == chosen:
-           avgpower=[int(picam[0]),int(picam[1])]
-        if cam0[2] == chosen:
-           avgpower=[int(cam0[0]),int(cam0[1])]
-        if cam1[2] == chosen:
-           avgpower=[int(cam1[0]),int(cam1[1])]
+# Start maximum algorithm
         
-        #if picam[2] == 0:
-        #   camnum = camnum - 1
-        #if cam0[2] == 0:
-        #   camnum = camnum - 1
-        #if cam1[2] == 0:
-        #   camnum = camnum - 1
+#        if picam[2] == chosen:
+#           avgpower=[int(picam[0]),int(picam[1])]
+#        if cam0[2] == chosen:
+#           avgpower=[int(cam0[0]),int(cam0[1])]
+#        if cam1[2] == chosen:
+#           avgpower=[int(cam1[0]),int(cam1[1])]
+
+# End maximum algorithm
+
+# Start arithmetic average algorithm
+#        camnum = 3
+#        if picam[2] == 0:
+#           camnum = camnum - 1
+#        if cam0[2] == 0:
+#           camnum = camnum - 1
+#        if cam1[2] == 0:
+#           camnum = camnum - 1
         
 #        avgpower = [int((picam[0]+cam0[0]+cam1[0])/(camnum)),int((picam[1]+cam0[1]+cam1[1])/(camnum))]
+# End Arithmetic average algorithm
 
 
-#        avgpower = [int((picam[2]*picam[0]+cam0[2]*cam0[0]+cam1[2]*cam1[0])/(picam[2]+cam0[2]+cam1[2])),int((picam[2]*picam[1]+cam0[2]*cam0[1]+cam1[2]*cam1[1])/(picam[2]+cam0[2]+cam1[2]))]
+        avgpower = [int((picam[2]*picam[0]+cam0[2]*cam0[0]+cam1[2]*cam1[0])/(picam[2]+cam0[2]+cam1[2])),int((picam[2]*picam[1]+cam0[2]*cam0[1]+cam1[2]*cam1[1])/(picam[2]+cam0[2]+cam1[2]))] # weighted average algorithm
 
-#        print("L: "+str(avgpower[0])+" R: "+str(avgpower[1]) + " T: " + str(time.time()))
         print(str(time.time())+","+str(avgpower[0])+","+str(avgpower[1]) + "," +str(piout)+","+str(cam0out)+","+str(cam1out))
         LMotor.setSpeed(avgpower[0])
         RMotor.setSpeed(avgpower[1])
     except Exception as e:
-        #print("L: "+str(0)+" R: "+str(0) + " T: " + str(time.time()))
         print(str(time.time())+","+str(avgpower[0])+","+str(avgpower[1]) + "," +str(piout)+","+str(cam0out)+","+str(cam1out)+",-1")
-#        print(str(time.time())+","+str(0)+","+str(0) + "," +str(0)+","+str(0)+","+str(0))
         try:
            s.close()
            s=socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
