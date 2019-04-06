@@ -11,7 +11,7 @@ import math
 import random
 
 # set up network socket/addresses
-host = '192.168.1.4'
+host = '192.168.1.19'
 Lport = 4000+int(sys.argv[1])
 Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
