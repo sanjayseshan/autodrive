@@ -11,7 +11,7 @@ import math
 import random
 
 # set up network socket/addresses
-host = '192.168.1.19'
+host = '192.168.1.26'
 Lport = 4000+int(sys.argv[1])
 Rport = 5000
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -329,9 +329,9 @@ while True:
     cv2.putText(img, "center angle: "+str(temp_angle), (10, 220), font, 2, (0, 0, 0), 2)
     cv2.putText(img, "P_fix: "+str(P_fix), (10, 330), font, 2, (0, 0, 0), 2)
 
-    # Integral controller is just the sum of the P_fix
-    # with an exponential decay rate of 0.5
-    I_fix = P_fix + 0.5*I_fix
+    # Integral controller is just the sum of the P_fix integral P_fix dt ~= sigma P_fix(1)
+    # Decay rate of 0.1
+    I_fix = P_fix + 0.1*I_fix
 
     lastP_fix = P_fix
 
@@ -339,9 +339,13 @@ while True:
     error = 100*blackarea/1300
     print("P, I, D, (E), (T) --->", P_fix, I_fix, D_fix, error, time.time())
 
+    kP = 2.5
+    kI = 0.25
+    kD = 0.5
+    
     # Compute correction based on angle/position error
-    left = int(100 - 1.0*P_fix - .5*D_fix - 0.02*I_fix)
-    right = int(100 + 1.0*P_fix + .5*D_fix + 0.02*I_fix)
+    left = int(100 - kP*P_fix - kD*D_fix - kI*I_fix)
+    right = int(100 + kP*P_fix + kD*D_fix + kI*I_fix)
 
     # send movement fix to robot
     SendToRobot(left,right,error, P_fix, I_fix, D_fix)
