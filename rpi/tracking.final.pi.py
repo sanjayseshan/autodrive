@@ -140,14 +140,14 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 #    cv2.imshow("robotimgPi", full_img)
 
     P_fix = deltaX
-    I_fix = P_fix+I_fix
+    I_fix = P_fix+0.9*I_fix
     D_fix = P_fix-lastP_fix
     lastP_fix = P_fix
     error = 100*blackarea/5500
     print("P, I, D, (E), (T) --->", P_fix, I_fix, D_fix, error, time.time())
 
-    kP = 3.0
-    kI = 0
+    kP = 1.5
+    kI = 0.25
     kD = 0
     
     # Compute correction based on angle/position error
