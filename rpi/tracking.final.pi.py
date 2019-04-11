@@ -148,7 +148,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     kP = 1.5
     kI = 0.15
-    kD = 5.0
+    kD = 4.5
     
     # Compute correction based on angle/position error
     left = int(100 - kP*P_fix - kD*D_fix - kI*I_fix)
