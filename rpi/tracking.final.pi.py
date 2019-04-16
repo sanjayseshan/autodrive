@@ -137,7 +137,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     cv2.circle(full_img,(int(x_min),int(y_min+200)),3,(200,0,200),-1)
     deltaX = 0.333*(160-x_min)
 
-#    cv2.imshow("robotimgPi", full_img)
+    cv2.imshow("robotimgPi", full_img)
 
     P_fix = deltaX
     I_fix = P_fix+0.9*I_fix

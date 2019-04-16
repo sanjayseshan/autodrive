@@ -48,7 +48,7 @@ threshold = int(sys.argv[4])
 
 
 def on_mouse_click (event, x, y, flags, frame):
-    global thiscol,lower_green,upper_green,lower_red,upper_red
+    global thiscol,lower_green,upper_green,lower_red,upper_red,upper_black,lower_black
     if event == cv2.EVENT_LBUTTONUP:
         colors.append(frame[y,x].tolist())
         print(thiscol)
@@ -60,13 +60,18 @@ def on_mouse_click (event, x, y, flags, frame):
         elif thiscol == "red":
             lower_red=np.array([frame[y,x].tolist()[0]-20,frame[y,x].tolist()[1]-30,frame[y,x].tolist()[2]-50])
             upper_red=np.array([frame[y,x].tolist()[0]+20,frame[y,x].tolist()[1]+30,frame[y,x].tolist()[2]+50])
+            thiscol = "black"
+        elif thiscol == "black":
+            lower_black=np.array([frame[y,x].tolist()[0]-20,frame[y,x].tolist()[1]-30,frame[y,x].tolist()[2]-50])
+            upper_black=np.array([frame[y,x].tolist()[0]+20,frame[y,x].tolist()[1]+30,frame[y,x].tolist()[2]+50])
             thiscol = "none"
 
 def calibrate():
     capture = cv2.VideoCapture(camid)
-    global thiscol,lower_black,upper_black
-    lower_black=np.array([0,0,0])
-    upper_black=np.array([180,125,80])
+    global thiscol
+#    global thiscol,lower_black,upper_black
+    #lower_black=np.array([0,0,0])
+    #upper_black=np.array([180,125,80])
     while thiscol != "none":
         ret, cap_img=cam.read()
         img=cv2.resize(cap_img,(xdim,ydim))
@@ -160,7 +165,8 @@ while True:
     try:
         cv2.putText(img, "green: "+str(colors[0]), (10, 50), font, 2, (0, 0, 0), 2)
         cv2.putText(img, "orange: "+str(colors[1]), (10, 80), font, 2, (0, 0, 0), 2)
-        cv2.imshow("robotimg"+camid,img)
+        dispimg=cv2.resize(img,(720,405))
+        cv2.imshow("robotimg"+camid,dispimg)
     except:
         pass
 
@@ -249,7 +255,7 @@ while True:
     drawblackbox = cv2.boxPoints(blackbox)
     drawblackbox = np.int0(drawblackbox)
     cv2.drawContours(img,[drawblackbox],0,(0,255,0),3)
-    cv2.imshow("4",lineimgHSV)
+    #cv2.imshow("4",lineimgHSV)
 
     # Unfortunately, opencv only gives rectangles angles
     # from 0 to -90 so we need to do some guesswork to
@@ -270,7 +276,7 @@ while True:
     y_end = int(y_min_real+50*np.sin(lineang*np.pi/180))
     cv2.line(img, (int(x_min_real),int(y_min_real)), (x_end,y_end), (200,0,200),2)
     cv2.circle(img,(int(x_min_real),int(y_min_real)),3,(200,0,200),-1)
-    cv2.line(img, (int(x_min_real),int(y_min_real)), (boxX,boxY), (200,0,200),2)
+    cv2.line(img, (int(x_min_real),int(y_min_real)), (int(boxX),int(boxY)), (200,0,200),2)
     cv2.putText(img, "line ang: "+str(lineang), (10, 190), font, 2, (0, 0, 0), 2)
     #cv2.imshow("5",img)
 
@@ -349,5 +355,6 @@ while True:
 
     # send movement fix to robot
     SendToRobot(left,right,error, P_fix, I_fix, D_fix)
+
  except:
      pass
