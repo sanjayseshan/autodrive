@@ -87,6 +87,54 @@ def FindColor(imageHSV, lower_col, upper_col, min_area):
 
 lastTime = time.time()
 #interval = 0.4
+
+
+
+colors = []
+
+def on_mouse_click (event, x, y, flags, frame):
+    global thiscol,lower_green,upper_green,lower_red,upper_red,lower_black,upper_black
+    if event == cv2.EVENT_LBUTTONUP:
+        colors.append(frame[y,x].tolist())
+        print(thiscol)
+        print(frame[y,x].tolist())
+
+        if thiscol == "black":
+            lower_black=np.array([frame[y,x].tolist()[0]-255,frame[y,x].tolist()[1]-100,frame[y,x].tolist()[2]-100])
+            upper_black=np.array([frame[y,x].tolist()[0]+255,frame[y,x].tolist()[1]+50,frame[y,x].tolist()[2]+50])
+            thiscol = "none"
+
+thiscol = "black"
+
+#def main():
+#global thiscol
+for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
+        cap_img = frame.array
+        img=cv2.resize(cap_img,(xdim,ydim))
+        orig_img = img.copy()
+#        hsv = img
+        hsv = cv2.cvtColor(img,cv2.COLOR_BGR2HSV)
+        if thiscol == "black":
+            cv2.putText(img, str("CLICK ON BLACK"), (10, 50), cv2.FONT_HERSHEY_PLAIN, 2, (20, 255, 255), 2)            
+        if colors:
+            cv2.putText(img, str(colors[-1]), (10, 100), cv2.FONT_HERSHEY_PLAIN, 2, (20, 255, 255), 2)
+        cv2.imshow('frame', img)
+        cv2.setMouseCallback('frame', on_mouse_click, hsv)
+
+    	rawCapture.truncate(0)
+        
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+        if thiscol == "none":
+                break
+
+cv2.destroyAllWindows()
+
+
+
+
+
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
     if (time.time()-lastTime) > float(interval):
         lastTime = time.time()
