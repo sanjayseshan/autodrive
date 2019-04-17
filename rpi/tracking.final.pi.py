@@ -110,6 +110,7 @@ thiscol = "black"
 #global thiscol
 for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
         cap_img = frame.array
+        full_img = cap_img
         img=cv2.resize(cap_img,(xdim,ydim))
         orig_img = img.copy()
 #        hsv = img
@@ -145,6 +146,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
             print("P, I, D, (E), (T) --->", 0, 0, 0, 0, time.time())
             SendToRobot(0,0,0,0,0,0)
 
+    cv2.imshow("robotimgPi", full_img)
+
     cap_img = frame.array
     full_img = cap_img
     #full_img=cv2.resize(cap_img,(xdim,ydim))
@@ -156,6 +159,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     key = cv2.waitKey(1) & 0xFF
 
     best_blackcont, blackcx_incrop, blackcy_incrop, blackarea = FindColor(imgHSV_crop, lower_black, upper_black, 10)
+
 
     rawCapture.truncate(0)
 
@@ -185,7 +189,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     cv2.circle(full_img,(int(x_min),int(y_min+200)),3,(200,0,200),-1)
     deltaX = 0.333*(160-x_min)
 
-    cv2.imshow("robotimgPi", full_img)
 
     P_fix = deltaX
     I_fix = P_fix+0.9*I_fix
