@@ -46,7 +46,7 @@ Phase I:
 * 2nd Place in Engineering/Robotics at Pittsburgh Regional Science and Engineering Fair
 * Fedex Ground Sponsor Award
 * Harrisburg University of Science & Technology Sponsor Award
-* Innovation Works Sponsor Awar
+* Innovation Works Sponsor Award
 
 # Future Plans
 
