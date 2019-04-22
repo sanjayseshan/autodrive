@@ -354,7 +354,9 @@ while True:
     right = int(100 + kP*P_fix + kD*D_fix + kI*I_fix)
 
     # send movement fix to robot
-    SendToRobot(left,right,error, P_fix, I_fix, D_fix)
+#    SendToRobot(left,right,error, P_fix, I_fix, D_fix)
+
+    time.sleep(0.1)
 
  except:
      pass
