@@ -1,0 +1,692 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 24 24 571 818
+%%Title: Enscript Output
+%%For: System Administrator
+%%Creator: GNU Enscript 1.6.6
+%%CreationDate: Fri May 10 18:06:42 2019
+%%Orientation: Landscape
+%%Pages: (atend)
+%%DocumentMedia: A4 595 842 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 6
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 6
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [595 842] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-enscript 1.6 6
+%%IncludeResource: font Times-Bold
+%%IncludeResource: font Times-Roman
+
+% Fonts.
+/Times-Bold /HeaderFont-Bold MF
+/HeaderDateF /HeaderFont-Bold findfont 12 scalefont def
+
+/Times-Roman /HeaderFont-Times MF
+/HeaderHDRF /HeaderFont-Times findfont 14 scalefont def
+
+/HeaderPageNumF /Helvetica-Bold findfont 28.8 scalefont def
+
+/do_header {	% print enscript header
+  gsave
+    d_header_x d_header_y translate
+
+    % light bar
+    0 0 d_header_w d_header_h 2 div Box
+    .95 setgray fill
+
+    % dark gray boxes
+    /dbw d_header_h 2 mul def	% dark box width
+    /dbc .7 def			% dark box color
+
+    % left dark box.
+    0 0 dbw d_header_h Box
+    dbc setgray fill
+
+    0 setgray 
+    HeaderDateF setfont
+    moddatestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 2 div 2 add moveto show
+    modtimestr dup stringwidth pop dbw exch sub 2 div 
+    d_header_h 5 div moveto show
+
+    % right dark box
+    d_header_w dbw sub 0 dbw d_header_h Box
+    dbc setgray fill
+
+    HeaderPageNumF setfont
+    1 setgray
+    pagenumstr dup
+    stringwidth pop dbw exch sub 2 div d_header_w dbw sub add
+    d_header_h .2 mul moveto show
+
+    % filename
+    0 setgray 
+    HeaderHDRF setfont
+    d_header_w fname stringwidth pop sub 2 div d_header_h 8 div moveto
+    fname show
+
+    % user supplied header string.
+    user_header_p {
+      /h d_header_h 8 div 5 mul def
+
+      % Implement strict enscript compatibility.
+      user_header_center_str () eq user_header_right_str () eq and {
+        d_header_w user_header_left_str stringwidth pop sub 2 div 
+        h moveto user_header_left_str show
+      } {
+        dbw 5 add h moveto user_header_left_str show
+
+        d_header_w user_header_center_str stringwidth pop sub 2 div 
+        h moveto user_header_center_str show
+
+	d_header_w dbw sub 5 sub user_header_right_str stringwidth pop
+	sub h moveto user_header_right_str show
+      } ifelse
+    } if
+
+  grestore
+} def
+%%EndResource
+/d_page_w 794 def
+/d_page_h 547 def
+/d_header_x 0 def
+/d_header_y 511 def
+/d_header_w 794 def
+/d_header_h 36 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 794 def
+/d_footer_h 0 def
+/d_output_w 794 def
+/d_output_h 511 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 1 def
+/fname (0.5-0-0.log) def
+/fdir (.) def
+/ftail (0.5-0-0.log) def
+% User defined strings:
+/pagenumstr (1) def
+/moddatestr (05/10/19) def
+/modtimestr (09:04:35) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 498 M
+(connected to 192.168.1.14) s
+5 487 M
+(time,left,right,piLeft,piRight,piConf,piP,piI,piD,cam0Left,cam0Right,cam0Conf,cam0P,cam0I,cam0D,cam1Left,cam1Right,cam1Conf,cam1P,) s
+5 476 M
+(cam1I,cam1D) s
+5 465 M
+(1554768122.71,36,30,36.3333333333,30.0,9.74545454547,-18.981,-18.981,-18.981,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 454 M
+(1554768122.75,36,30,36.0,30.3333333333,4.80303030303,-17.649,-36.63,1.332,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 443 M
+(1554768122.84,36,29,36.6666666667,29.6666666667,10.2121212121,-20.1465,-56.7765,-2.4975,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 432 M
+(1554768122.94,37,29,37.0,29.3333333333,11.0636363636,-22.644,-79.4205,-2.4975,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 421 M
+(1554768123.03,37,28,37.3333333333,29.0,11.5818181818,-25.4745,-104.895,-2.8305,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 410 M
+(1554768123.12,37,28,37.6666666667,28.6666666667,12.4121212121,-27.639,-132.534,-2.1645,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 399 M
+(1554768123.22,38,28,38.3333333333,28.0,12.2363636364,-31.8015,-164.3355,-4.1625,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 388 M
+(1554768123.31,39,27,39.3333333333,27.0,11.9757575758,-37.7955,-202.131,-5.994,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 377 M
+(1554768123.4,40,26,40.0,26.3333333333,11.5696969697,-41.1255,-243.2565,-3.33,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 366 M
+(1554768123.5,40,26,40.3333333333,26.0,9.1212121212,-43.7895,-287.046,-2.664,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 355 M
+(1554768123.59,40,25,40.6666666667,25.6666666667,7.2787878788,-45.7874898376,-332.833489838,-1.99798983765,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 344 M
+(1554768123.69,41,25,41.0,25.3333333333,5.8696969697,-47.286,-380.119489838,-1.49851016235,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 333 M
+(1554768123.78,41,25,41.3333333333,25.0,3.42424242423,-48.285,-428.404489838,-0.999,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 322 M
+(1554768123.87,41,25,41.3333333333,25.0,1.94545454545,-48.7845,-477.188989838,-0.4995,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 311 M
+(1554768123.97,41,24,41.6666666667,24.6666666667,0.436363636363,-50.1165,-527.305489838,-1.332,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 300 M
+(1554768124.06,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 289 M
+(1554768124.15,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 278 M
+(1554768124.25,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 267 M
+(1554768124.34,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 256 M
+(1554768124.44,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 245 M
+(1554768124.53,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 234 M
+(1554768124.64,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 223 M
+(1554768124.72,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 212 M
+(1554768124.81,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 201 M
+(1554768124.9,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 190 M
+(1554768125.0,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 179 M
+(1554768125.09,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 168 M
+(1554768125.19,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 157 M
+(1554768125.28,41,24,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 146 M
+(1554768125.37,41,24,41.6666666667,24.6666666667,0.336363636363,-50.4495,-577.754989838,-0.333,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 135 M
+(1554768125.51,41,25,41.0,25.3333333333,1.15454545455,-47.4525,-625.207489838,2.997,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 124 M
+(1554768125.6,40,25,40.6666666667,25.6666666667,2.55757575758,-44.5653550415,-669.772844879,2.8871449585,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 113 M
+(1554768125.69,39,27,39.3333333333,27.0,2.5303030303,-37.1502921753,-706.923137054,7.41506286621,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 102 M
+(1554768125.78,38,28,38.0,28.3333333333,2.70303030303,-28.971,-735.894137054,8.17929217529,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 91 M
+(1554768125.87,38,28,38.0,28.3333333333,4.36666666667,-29.0176096344,-764.911746689,-0.0466096343994,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 80 M
+(1554768125.97,35,30,35.6666666667,30.6666666667,2.68787878788,-15.651,-780.562746689,13.3666096344,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 69 M
+(1554768126.06,35,31,35.0,31.3333333333,5.7090909091,-11.0376471863,-791.600393875,4.61335281372,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 58 M
+(1554768126.15,34,32,34.3333333333,32.0,10.4393939394,-6.29850476074,-797.898898636,4.73914242554,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 47 M
+(1554768126.25,32,33,32.6666666667,33.6666666667,12.5121212121,2.38802096558,-795.51087767,8.68652572632,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 36 M
+(1554768126.34,31,35,31.0,35.3333333333,11.7393939394,13.9526979675,-781.558179703,11.564677002,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 25 M
+(1554768126.44,28,38,28.0,38.3333333333,10.2606060606,30.1365,-751.421679703,16.1838020325,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 14 M
+(1554768126.53,26,39,26.6666666667,39.6666666667,12.9212121212,38.4615,-712.960179703,8.325,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 3 M
+(1554768126.62,26,40,26.3333333333,40.0,6.41515151517,41.4585,-671.501679703,2.997,0,0,0,0,0,0,0,0,0,0,0,0) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+90 rotate
+24 -571 translate
+/pagenum 2 def
+/fname (0.5-0-0.log) def
+/fdir (.) def
+/ftail (0.5-0-0.log) def
+% User defined strings:
+/pagenumstr (2) def
+/moddatestr (05/10/19) def
+/modtimestr (09:04:35) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 498 M
+(1554768126.72,25,41,25.3333333333,41.0,3.27878787879,46.62,-624.881679703,5.1615,0,0,0,0,0,0,0,0,0,0,0,0) s
+5 487 M
+(1554768126.81,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 476 M
+(1554768126.9,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 465 M
+(1554768127.05,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 454 M
+(1554768127.13,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 443 M
+(1554768127.22,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 432 M
+(1554768127.31,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 421 M
+(1554768127.4,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 410 M
+(1554768127.5,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 399 M
+(1554768127.59,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 388 M
+(1554768127.68,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 377 M
+(1554768127.78,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 366 M
+(1554768127.87,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 355 M
+(1554768127.96,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 344 M
+(1554768128.06,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 333 M
+(1554768128.15,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 322 M
+(1554768128.25,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 311 M
+(1554768128.34,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 300 M
+(1554768128.44,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 289 M
+(1554768128.53,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 278 M
+(1554768128.62,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 267 M
+(1554768128.71,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 256 M
+(1554768128.81,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 245 M
+(1554768128.9,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 234 M
+(1554768129.0,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 223 M
+(1554768129.09,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 212 M
+(1554768129.18,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 201 M
+(1554768129.28,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+5 190 M
+(1554768129.37,25,41,0.0,0.0,0.0,0.0,0.0,0.0,0,0,0,0,0,0,0,0,0,0,0,0,-1) s
+_R
+S
+%%Trailer
+%%Pages: 2
+%%DocumentNeededResources: font Times-Roman Courier-Bold Courier 
+%%+ font Times-Bold 
+%%EOF
