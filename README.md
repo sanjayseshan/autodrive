@@ -9,4 +9,5 @@ tracking.final.py: This is the code to run on each infrastructure camera, which 
 
 rpi/: Code for the Raspberry Pi
 
-Visit my <a href="https://sanjayseshan.github.io/autodrive/">project website</a> for detailed information.
+Visit my <a href="https://sanjayseshan.github.io/autodrive/">project website</a> and <a href="https://arxiv.org/abs/2009.03458">paper</a> for detailed information.
+
